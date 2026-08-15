@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.wrangler/
+coverage/
+*.log
+.DS_Store
+
+# Never commit a key. .env.example is the template and the only one tracked.
+.env*
+!.env.example

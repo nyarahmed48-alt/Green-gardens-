@@ -1,0 +1,36 @@
+# Cloudflare Workers deployment.
+#
+# Connect this repository under Workers & Pages → Settings → Builds and every
+# push deploys. Build command: `npm run build`, which writes the site to dist/.
+#
+# Secrets are NOT set here — never commit a key. Set them in the dashboard
+# under Settings → Variables and Secrets:
+#
+#   OPENROUTER_API_KEY   secret    from openrouter.ai/keys
+#   OPENROUTER_MODEL     plain     one id, or several comma-separated
+#   RESEND_API_KEY       secret    from resend.com/api-keys
+#   MAIL_FROM            plain     an address your provider lets you send as
+#   MAIL_TO              plain     where reservations land
+#
+# SMTP_* variables do nothing here: a Worker cannot open a TCP socket, so use
+# the HTTP mail transport on Cloudflare. See README.md.
+
+name = "green-gardens"
+main = "./worker/index.ts"
+compatibility_date = "2026-08-15"
+
+[observability]
+enabled = true
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+# Unmatched paths return index.html, so a refresh or a shared deep link still
+# resolves to the page.
+not_found_handling = "single-page-application"
+
+# Without this a URL typed into the address bar counts as a navigation and
+# would be answered with the page shell before the Worker ran — which is how
+# an API path ends up returning HTML instead of JSON.
+run_worker_first = ["/api/*"]

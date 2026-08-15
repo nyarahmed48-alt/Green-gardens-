@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  Arabic is the default. It is declared here rather than left to React so the
+  first paint is already right-to-left — otherwise a visitor sees a flash of
+  left-to-right layout before the app mounts. src/i18n.tsx takes over and
+  changes both attributes for anyone who picks another language.
+
+  Kurdish is right-to-left too, so only English changes the direction.
+
+  The tags below are English because a link preview and a search result are
+  rendered by a crawler, not a visitor, and the crawler never presses the
+  language switch. The hreflang tags say the same URL serves all three.
+-->
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Green Gardens — private garden estate & restaurant, Erbil</title>
+    <meta
+      name="description"
+      content="A private garden estate and restaurant on the Pirmam road, Erbil. Dinner on the Terrace, weddings in the Orangery, and company events for up to 220 guests. Reserve online in Arabic, Kurdish or English."
+    />
+    <meta name="theme-color" content="#060a07" />
+
+    <link rel="alternate" hreflang="ar" href="/" />
+    <link rel="alternate" hreflang="ckb" href="/" />
+    <link rel="alternate" hreflang="en" href="/" />
+    <link rel="alternate" hreflang="x-default" href="/" />
+
+    <!-- An olive-leaf mark, inline so there is no second request for it. -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23060a07'/%3E%3Cpath d='M78 28c2 26-12 42-32 44-7 1-13-1-16-5 14-2 24-9 30-20-8 6-17 9-27 9 12-6 20-15 24-26 10 0 17-1 21-2z' fill='%238ee9a1'/%3E%3Cpath d='M30 72c4-14 10-24 20-32' stroke='%238ee9a1' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3C/svg%3E"
+    />
+
+    <!-- Most of the traffic here arrives as a link pasted into WhatsApp, so
+         this is the first thing many guests see of the venue. -->
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:site_name" content="Green Gardens" />
+    <meta property="og:title" content="Green Gardens — private garden estate & restaurant, Erbil" />
+    <meta
+      property="og:description"
+      content="Four acres of garden, three spaces, and an evening that doesn't look like anywhere else. Dinner, weddings and company events in Erbil."
+    />
+    <meta property="og:locale" content="ar_IQ" />
+    <meta property="og:locale:alternate" content="ckb_IQ" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

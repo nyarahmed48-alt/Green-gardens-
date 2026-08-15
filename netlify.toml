@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# The two endpoints. These must come before the catch-all below, or it would
+# swallow them and answer with index.html.
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
+  status = 200
+
+[[redirects]]
+  from = "/api/reservations"
+  to = "/.netlify/functions/reservations"
+  status = 200
+
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+
+# Everything else serves the page.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

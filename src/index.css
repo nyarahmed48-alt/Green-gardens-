@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@600;700;800&display=swap');
+@import "tailwindcss";
+
+/* =========================================================================
+   Green Gardens.
+
+   The palette lives in src/theme.ts and is applied inline, because Tailwind
+   cannot see a class name assembled at runtime — `bg-[${GG.leaf}]` produces no
+   CSS at all. What is left here is what an inline style cannot reach: fonts,
+   the page ground, focus states, placeholders, native select options and the
+   date/time pickers, which the browser draws itself and which default to a
+   light-mode look that would flash white on a near-black page.
+   ========================================================================= */
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-brand: "Poppins", "Space Grotesk", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* The header is fixed, so an anchor jump would otherwise land with the
+     heading tucked underneath it. */
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  background-color: #060a07;
+  color: #f2efe6;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: #8ee9a1;
+  color: #05130a;
+}
+
+* {
+  scrollbar-color: #2f4438 #060a07;
+  scrollbar-width: thin;
+}
+
+/* ------------------------------------------------------------ form fields */
+
+.gg-field {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #1e2b23;
+  background-color: #0c130f;
+  color: #f2efe6;
+  padding: 11px 13px;
+  font-size: 14.5px;
+  line-height: 1.4;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gg-field::placeholder { color: #6d8175; }
+.gg-field:hover { border-color: #2f4438; }
+
+.gg-field:focus {
+  outline: none;
+  border-color: #8ee9a1;
+  box-shadow: 0 0 0 3px rgba(142, 233, 161, 0.16);
+}
+
+.gg-field[aria-invalid="true"] { border-color: #ffb4a2; }
+
+/* The dropdown list itself is drawn by the OS, not by the page. */
+.gg-field option {
+  background-color: #0c130f;
+  color: #f2efe6;
+}
+
+/* Chrome draws the date and time picker glyphs almost black on almost black
+   without this, which reads as a field with no picker at all. */
+.gg-field::-webkit-calendar-picker-indicator {
+  filter: invert(85%) sepia(18%) saturate(600%) hue-rotate(75deg);
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------- surfaces */
+
+.gg-grain {
+  background-image:
+    radial-gradient(55rem 38rem at 15% -12%, rgba(142, 233, 161, 0.16), transparent 62%),
+    radial-gradient(42rem 30rem at 88% 4%, rgba(31, 122, 69, 0.28), transparent 64%);
+}
+
+.gg-scroll {
+  scrollbar-color: #2f4438 #0c130f;
+  scrollbar-width: thin;
+}
+
+@keyframes gg-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.gg-rise {
+  animation: gg-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-rise { animation: none; }
+}

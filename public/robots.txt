@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# The endpoints answer JSON to the page's own fetches; there is nothing in them
+# for a crawler to index.
+Disallow: /api/
