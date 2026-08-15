@@ -4,19 +4,19 @@
  */
 
 /**
- * Yasmin — the Green Gardens concierge.
+ * Green AI — the Green Gardens concierge.
  *
  * Transport-free on purpose, like the reservation handler next to it: Express,
  * the Worker and both serverless hosts all call this one function, so there is
  * one copy of what the concierge is allowed to say.
  *
- * She is grounded in server/brand.ts — spaces, capacities, packages, hours —
+ * It is grounded in server/brand.ts — spaces, capacities, packages, hours —
  * which the reservation emails read too, so a price cannot be right in one
  * place and wrong in the other.
  *
- * The rule that matters most: she cannot confirm a booking. Only the desk
- * does that. A bot that tells a guest their wedding date is held has created a
- * problem an apology does not fix, so she is told to say so plainly and point
+ * The rule that matters most: it cannot confirm a booking. Only the desk does
+ * that. A bot that tells a guest their wedding date is held has created a
+ * problem an apology does not fix, so it is told to say so plainly and point
  * at the form.
  */
 
@@ -50,7 +50,7 @@ const LANG_LABEL: Record<Lang, string> = {
 
 /** The brief. Facts are built from brand.ts so the two cannot drift. */
 function systemPrompt(lang: Lang): string {
-  return `You are Yasmin, the concierge for ${VENUE.name}, a private garden estate and restaurant in ${VENUE.city}. You answer visitors on the ${VENUE.name} website.
+  return `You are Green AI, the concierge for ${VENUE.name}, a private garden estate and restaurant in ${VENUE.city}. You answer visitors on the ${VENUE.name} website.
 
 ${brandBriefing()}
 

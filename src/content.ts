@@ -343,9 +343,12 @@ export const FORM = {
 /* ============================================================== concierge === */
 
 export const CHAT = {
-  name: { ar: "ياسمين", ckb: "یاسمین", en: "Yasmin" },
-  role: { ar: "مساعِدة الحجوزات", ckb: "یاریدەدەری حجز", en: "Garden concierge" },
-  open: { ar: "اسأل ياسمين", ckb: "لە یاسمین بپرسە", en: "Ask Yasmin" },
+  /* "Green AI" stays in Latin script in all three languages, for the same
+     reason "Green Gardens" does: it is a name, not a phrase to translate, and
+     it reads as part of the same brand in every language. */
+  name: { ar: "Green AI", ckb: "Green AI", en: "Green AI" },
+  role: { ar: "مساعِد الحجوزات", ckb: "یاریدەدەری حجز", en: "Garden concierge" },
+  open: { ar: "اسأل Green AI", ckb: "لە Green AI بپرسە", en: "Ask Green AI" },
   close: { ar: "إغلاق", ckb: "داخستن", en: "Close" },
   clear: { ar: "محادثة جديدة", ckb: "گفتوگۆی نوێ", en: "New conversation" },
   send: { ar: "إرسال", ckb: "ناردن", en: "Send" },

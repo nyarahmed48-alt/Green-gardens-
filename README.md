@@ -6,8 +6,8 @@ systems behind it:
 
 - **A reservation desk** that takes bookings from private guests and from
   companies, and emails them to the venue.
-- **An AI concierge** that answers questions about the spaces, the packages and
-  the hours.
+- **Green AI**, a concierge that answers questions about the spaces, the
+  packages and the hours.
 
 ```bash
 npm install
@@ -124,8 +124,8 @@ thanks someone for a reservation nobody received is worse than one that admits
 it is not connected. If only the guest's copy fails, the booking still
 succeeded — the venue has it — so that is logged and nothing more.
 
-The concierge **cannot confirm a booking** and is instructed to say so and
-point at the form. She answers from the venue's facts in `server/brand.ts`,
+Green AI **cannot confirm a booking** and is instructed to say so and point at
+the form. It answers from the venue's facts in `server/brand.ts`,
 which the reservation emails read too, so a price cannot be right in one place
 and wrong in the other.
 

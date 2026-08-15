@@ -4,7 +4,7 @@
  */
 
 /**
- * Yasmin — the floating concierge.
+ * Green AI — the floating concierge.
  *
  * A docked panel rather than a full-screen modal: a visitor asking whether the Orangery seats their guest list is
  * usually reading the page while they ask, and covering it would make them
@@ -98,13 +98,19 @@ export function ConciergeChat() {
 
   if (!open) {
     return (
+      /* Deliberately small. This floats over the page for the whole visit, and
+         a large pill in the corner competes with the reservation form, which
+         is the thing the page is actually for. Small enough to ignore, large
+         enough to stay a comfortable tap target — the padding keeps it around
+         36px tall, above the 24px minimum and close enough to 44px with the
+         hit area browsers add around it. */
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 end-5 z-40 inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-[14.5px] font-bold shadow-2xl transition-transform hover:scale-[1.03]"
+        className="fixed bottom-4 end-4 z-40 inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-bold shadow-lg transition-transform hover:scale-[1.04]"
         style={{ background: GG.leaf, color: GG.onLeaf }}
       >
-        <Leaf className="h-4 w-4" />
+        <Leaf className="h-3.5 w-3.5" />
         {c(CHAT.open)}
       </button>
     );
