@@ -10,7 +10,7 @@
  */
 
 import { handleChat } from "../../server/chat";
-import { providerSettings, type EnvLike } from "../../server/settings";
+import { crawlSettings, providerSettings, type EnvLike } from "../../server/settings";
 
 const JSON_HEADERS = { "content-type": "application/json" };
 
@@ -38,6 +38,7 @@ export default async function handler(request: Request): Promise<Response> {
     history,
     lang,
     settings: providerSettings(process.env as EnvLike),
+    crawl: crawlSettings(process.env as EnvLike),
   });
 
   return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });

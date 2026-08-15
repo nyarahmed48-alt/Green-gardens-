@@ -23,7 +23,8 @@ import dotenv from "dotenv";
 import { handleChat, health } from "./server/chat";
 import { handleReservation } from "./server/reservations";
 import { sendMailNode } from "./server/mail-node";
-import { mailReadiness, mailSettings, providerSettings, type EnvLike } from "./server/settings";
+import { crawlSettings, mailReadiness, mailSettings, providerSettings, type EnvLike } from "./server/settings";
+import { warmCrawl } from "./server/knowledge";
 
 dotenv.config();
 
@@ -98,7 +99,13 @@ app.post("/api/chat", async (req, res) => {
   }
 
   const { message, history, lang } = req.body || {};
-  const { status, body } = await handleChat({ message, history, lang, settings: providerSettings(env()) });
+  const { status, body } = await handleChat({
+    message,
+    history,
+    lang,
+    settings: providerSettings(env()),
+    crawl: crawlSettings(env()),
+  });
   res.status(status).json(body);
 });
 
@@ -128,7 +135,9 @@ app.get("/api/health", (_req, res) => {
   const mail = mailSettings(env());
   res
     .set("cache-control", "no-store")
-    .json(health(providerSettings(env()), mailReadiness(mail), mail.transport, mail.to.length));
+    .json(
+      health(providerSettings(env()), mailReadiness(mail), mail.transport, mail.to.length, crawlSettings(env())),
+    );
 });
 
 /* An unknown /api path must answer JSON rather than falling through to the
@@ -158,6 +167,11 @@ async function start() {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Green Gardens running at http://localhost:${PORT}`);
   });
+
+  /* Fill the crawl cache now rather than making the first visitor wait on it.
+     Failures are logged inside and never stop the server booting — the
+     concierge knows the page's own content with or without a crawl. */
+  void warmCrawl(crawlSettings(env()));
 }
 
 start();

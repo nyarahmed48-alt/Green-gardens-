@@ -16,7 +16,7 @@
  */
 
 import { handleChat } from "../server/chat";
-import { providerSettings, type EnvLike } from "../server/settings";
+import { crawlSettings, providerSettings, type EnvLike } from "../server/settings";
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
@@ -39,6 +39,7 @@ export default async function handler(req: any, res: any) {
     history,
     lang,
     settings: providerSettings(process.env as EnvLike),
+    crawl: crawlSettings(process.env as EnvLike),
   });
   return res.status(status).json(body);
 }

@@ -58,6 +58,37 @@ export function providerSettings(env: EnvLike): ProviderSettings {
   };
 }
 
+/* ================================================================ crawl === */
+
+export interface CrawlSettings {
+  /** Pages to read. Empty means the crawler is switched off. */
+  urls: string[];
+  /** Ceiling on pages fetched per crawl, start pages plus what they link to. */
+  maxPages: number;
+  /** How long a crawl result stands before it is fetched again. */
+  ttlMinutes: number;
+}
+
+/**
+ * What Green AI should read, beyond the page's own copy.
+ *
+ * Off unless CRAWL_URLS names something. The concierge is already grounded in
+ * the site's content without it (see server/knowledge.ts), so an unconfigured
+ * crawler costs a deployment nothing.
+ */
+export function crawlSettings(env: EnvLike): CrawlSettings {
+  const maxPages = Number(first(env.CRAWL_MAX_PAGES) || 8);
+  const ttlMinutes = Number(first(env.CRAWL_TTL_MINUTES) || 60);
+
+  return {
+    urls: list(first(env.CRAWL_URLS)),
+    // Guard the numbers: a typo in a dashboard field should not mean an
+    // unbounded crawl or one that refetches on every single message.
+    maxPages: Number.isFinite(maxPages) ? Math.min(Math.max(1, maxPages), 25) : 8,
+    ttlMinutes: Number.isFinite(ttlMinutes) ? Math.min(Math.max(5, ttlMinutes), 1440) : 60,
+  };
+}
+
 /* ================================================================= mail === */
 
 /** How outgoing mail leaves the building. */

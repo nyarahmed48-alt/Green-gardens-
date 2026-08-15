@@ -23,7 +23,7 @@
 import { handleChat, health } from "../server/chat";
 import { handleReservation } from "../server/reservations";
 import { sendMail } from "../server/mail";
-import { mailReadiness, mailSettings, providerSettings, type EnvLike } from "../server/settings";
+import { crawlSettings, mailReadiness, mailSettings, providerSettings, type EnvLike } from "../server/settings";
 
 export interface Env {
   /** Static assets binding — the built site. */
@@ -40,6 +40,9 @@ export interface Env {
   MAIL_FROM?: string;
   MAIL_TO?: string;
   MAIL_BCC?: string;
+  CRAWL_URLS?: string;
+  CRAWL_MAX_PAGES?: string;
+  CRAWL_TTL_MINUTES?: string;
 }
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -53,7 +56,7 @@ async function handleApi(request: Request, env: Env, url: URL): Promise<Response
 
   if (url.pathname === "/api/health") {
     const mail = mailSettings(bag);
-    return json(health(providerSettings(bag), mailReadiness(mail), mail.transport, mail.to.length), 200, {
+    return json(health(providerSettings(bag), mailReadiness(mail), mail.transport, mail.to.length, crawlSettings(bag)), 200, {
       "cache-control": "no-store",
     });
   }
@@ -75,7 +78,13 @@ async function handleApi(request: Request, env: Env, url: URL): Promise<Response
 
   if (isChat) {
     const { message, history, lang } = payload ?? {};
-    const { status, body } = await handleChat({ message, history, lang, settings: providerSettings(bag) });
+    const { status, body } = await handleChat({
+      message,
+      history,
+      lang,
+      settings: providerSettings(bag),
+      crawl: crawlSettings(bag),
+    });
     return json(body, status);
   }
 

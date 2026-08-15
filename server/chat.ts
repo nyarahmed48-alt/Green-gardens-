@@ -30,6 +30,8 @@ import {
   type ProviderSettings,
 } from "./openrouter";
 import { VENUE, brandBriefing } from "./brand";
+import { getCrawl, knowledgeBlock, peekCrawl } from "./knowledge";
+import type { CrawlSettings } from "./settings";
 
 export const MAX_MESSAGE_CHARS = 600;
 
@@ -48,15 +50,27 @@ const LANG_LABEL: Record<Lang, string> = {
   en: "English",
 };
 
-/** The brief. Facts are built from brand.ts so the two cannot drift. */
-function systemPrompt(lang: Lang): string {
+/**
+ * The brief.
+ *
+ * Facts come from brand.ts and the site's own copy from knowledge.ts, so
+ * neither can drift from what a visitor is reading on the page.
+ *
+ * Order matters here. The rules sit BELOW the knowledge, because the crawled
+ * part of that knowledge is text from web pages that somebody else can edit —
+ * and the last word on how the concierge behaves must be ours, not a page's.
+ */
+function systemPrompt(lang: Lang, knowledge: string): string {
   return `You are Green AI, the concierge for ${VENUE.name}, a private garden estate and restaurant in ${VENUE.city}. You answer visitors on the ${VENUE.name} website.
 
 ${brandBriefing()}
 
+${knowledge}
+
 How to behave:
 - Warm, composed and brief. Two or three sentences usually; this is a luxury venue, not a call-centre script.
-- Answer from the facts above. If something is not in them — a specific date's availability, a menu substitution, a discount — say you will have the reservations desk confirm it, and do not guess.
+- Answer from the facts and the page content above. If something is not in them — a specific date's availability, a menu substitution, a discount — say you will have the reservations desk confirm it, and do not guess.
+- Where the page and the facts disagree, prefer the facts, and where a crawled page disagrees with either, say you will have the desk confirm the detail.
 - Never invent prices, capacities, dates or policies. Never promise that a table, a space or a date is available.
 - You cannot make, change or cancel a booking. When someone wants to book, point them at the reservation form on this page: it takes private and company bookings, and the desk replies to confirm.
 - Company enquiries: mention that business bookings are invoiced and can be placed against a purchase order.
@@ -71,6 +85,8 @@ export interface ChatRequest {
   history?: unknown;
   lang?: unknown;
   settings: ProviderSettings;
+  /** What to read beyond the page's own copy. Omit and only the page is used. */
+  crawl?: CrawlSettings;
 }
 
 export interface ChatOutcome {
@@ -79,7 +95,13 @@ export interface ChatOutcome {
 }
 
 /** One reply from the concierge. */
-export async function handleChat({ message, history, lang, settings }: ChatRequest): Promise<ChatOutcome> {
+export async function handleChat({
+  message,
+  history,
+  lang,
+  settings,
+  crawl,
+}: ChatRequest): Promise<ChatOutcome> {
   const active = asLang(lang);
   const say = (choices: Says) => choices[active];
 
@@ -140,8 +162,17 @@ export async function handleChat({ message, history, lang, settings }: ChatReque
   conversation.push({ role: "user", content: message });
 
   try {
+    /* Normally a cache read. It only costs a fetch when the cache is cold or
+       stale, and a crawl failure returns null rather than throwing — the
+       concierge still knows the page either way. */
+    const crawled = crawl ? await getCrawl(crawl) : null;
+
     const { text, refused } = await generateReply(
-      { system: systemPrompt(active), messages: conversation, temperature: 0.45 },
+      {
+        system: systemPrompt(active, knowledgeBlock(crawled)),
+        messages: conversation,
+        temperature: 0.45,
+      },
       settings,
     );
 
@@ -188,6 +219,20 @@ export async function handleChat({ message, history, lang, settings }: ChatReque
 export interface Health {
   concierge: { configured: boolean; modelsConfigured: number };
   reservations: { ready: boolean; transport: string; recipients: number; reason?: string };
+  knowledge: {
+    /** Always true: the page's own copy needs no configuration to be read. */
+    pageContent: boolean;
+    crawl:
+      | { enabled: false }
+      | {
+          enabled: true;
+          urls: number;
+          pagesFetched: number | null;
+          lastCrawled: string | null;
+          /** Pages that fetched fine but had nothing readable, plus errors. */
+          warnings: string[];
+        };
+  };
 }
 
 /**
@@ -202,9 +247,28 @@ export function health(
   mail: { ready: boolean; reason?: string },
   transport: string,
   recipients: number,
+  crawl?: CrawlSettings,
 ): Health {
+  /* Reported from the cache rather than by crawling: opening a health check
+     should never kick off network work of its own. Nulls mean "not crawled on
+     this instance yet", which on a serverless host is the normal state for a
+     cold isolate. */
+  const last = crawl?.urls.length ? peekCrawl() : null;
+
   return {
     concierge: { configured: isConfigured(provider), modelsConfigured: modelCount(provider) },
     reservations: { ready: mail.ready, transport, recipients, ...(mail.reason ? { reason: mail.reason } : {}) },
+    knowledge: {
+      pageContent: true,
+      crawl: crawl?.urls.length
+        ? {
+            enabled: true,
+            urls: crawl.urls.length,
+            pagesFetched: last ? last.pages.length : null,
+            lastCrawled: last ? new Date(last.fetchedAt).toISOString() : null,
+            warnings: last ? last.warnings : [],
+          }
+        : { enabled: false },
+    },
   };
 }
