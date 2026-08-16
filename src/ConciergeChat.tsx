@@ -4,22 +4,23 @@
  */
 
 /**
- * Green AI — the floating concierge.
+ * Green AI — the floating assistant.
  *
- * A docked panel rather than a full-screen modal: a visitor asking whether the Orangery seats their guest list is
- * usually reading the page while they ask, and covering it would make them
- * close the chat to check.
+ * A docked panel rather than a full-screen modal: someone asking what a lawn
+ * costs is usually reading the rates while they ask, and covering the page
+ * would make them close the chat to check.
  *
- * The panel does go full-height on a phone, where a 380px card floating over
- * a page is worse than either option.
+ * It does go full-height on a phone, where a 380px card floating over a page
+ * is worse than either option.
  *
- * The agent cannot confirm a booking and is told so in its brief
- * (server/chat.ts). The panel says the same thing under the composer,
- * because a visitor should not have to ask the bot what the bot can do.
+ * Green AI cannot quote a firm price or book a visit, and is told so in its
+ * brief (server/chat.ts). The note under the composer says the same thing, so
+ * a visitor never has to ask the assistant what the assistant can do — and
+ * the CoreOs credit sits with it.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Leaf, Loader2, RotateCcw, Send, X } from "lucide-react";
+import { Leaf, RotateCcw, Send, X } from "lucide-react";
 import { useLang } from "./i18n";
 import { CHAT } from "./content";
 import { GG } from "./theme";
@@ -197,10 +198,24 @@ export function ConciergeChat() {
           </div>
         ) : null}
 
+        {/* Three dots rather than a spinner: a spinner reads as "loading, and
+            you can do nothing", while a typing indicator reads as a reply on
+            its way. The wait is the same; the impression is not. */}
         {busy ? (
-          <div className="flex items-center gap-2 text-[13px]" style={{ color: GG.faint }}>
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            {c(CHAT.name)}…
+          <div className="flex items-center gap-2" aria-live="polite">
+            <span
+              className="flex items-center gap-1 rounded-2xl px-3.5 py-3"
+              style={{ background: GG.raised, border: `1px solid ${GG.line}` }}
+            >
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="gg-dot inline-block h-1.5 w-1.5 rounded-full"
+                  style={{ background: GG.leaf, animationDelay: `${i * 0.16}s` }}
+                />
+              ))}
+            </span>
+            <span className="sr-only">{c(CHAT.name)}…</span>
           </div>
         ) : null}
 
@@ -251,13 +266,19 @@ export function ConciergeChat() {
         <p className="mt-2 text-[11.5px] leading-relaxed" style={{ color: GG.faint }}>
           {c(CHAT.note)}
         </p>
+        {/* Attribution. CoreOs built and runs the assistant, and it sits under
+            the composer rather than in the header so it reads as a credit
+            rather than as a second brand competing with Green Gardens. */}
+        <p className="mt-1 text-[11px]" style={{ color: GG.faint }}>
+          <span style={{ opacity: 0.8 }}>{c(CHAT.poweredBy)}</span>
+        </p>
       </div>
     </div>
   );
 }
 
 /** One message. `dir="auto"` so a conversation can mix languages without the
- *  punctuation jumping ends. A guest may well ask in Kurdish and quote an
+ *  punctuation jumping ends. A client may well ask in Kurdish and quote an
  *  English name in the same sentence. */
 function Bubble({ role, text }: { role: "user" | "agent"; text: string }) {
   const mine = role === "user";

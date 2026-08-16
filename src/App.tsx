@@ -6,22 +6,24 @@
 /**
  * Green Gardens — the page.
  *
- * One long page rather than several. Everything a guest needs in order to
- * decide — what the spaces are, what they cost, what it looks like, what
- * others said — fits in one scroll, and a booking that takes one scroll and no
- * navigation is a booking that gets finished.
+ * A landscaping company sells on two things: proof that the last garden
+ * worked, and confidence that the price will not move once the digging
+ * starts. So the page runs proof (work, clients) into process (how it works,
+ * what it costs) and ends at the one action worth taking — booking the free
+ * site visit that produces a real quotation.
  *
- * The design brief was two things that pull against each other: luxury and
- * dark, and bold and vibrant. They are reconciled by keeping every surface
- * near-black and spending all the saturation on one light green, which only
- * ever appears on what a guest is meant to read first or act on. See the note
- * at the top of theme.ts.
+ * Nothing here invites anyone to visit us. The crew travels to the client, and
+ * every call to action books that direction.
+ *
+ * One long page rather than several: everything needed to decide fits in one
+ * scroll, and a request that takes one scroll and no navigation is a request
+ * that gets finished.
  *
  * Composition only. Copy lives in content.ts, colour in theme.ts, and the two
  * interactive pieces are their own files.
  */
 
-import { CalendarCheck, Clock, Leaf, MapPin, Quote, Timer } from "lucide-react";
+import { CalendarCheck, Clock, Leaf, MapPin, Quote, Sprout } from "lucide-react";
 import { ConciergeChat } from "./ConciergeChat";
 import { ReservationForm } from "./ReservationForm";
 import { Footer } from "./components/Footer";
@@ -52,7 +54,7 @@ export default function App() {
               <span className="text-[12px] font-bold uppercase tracking-[0.22em]">{t(GARDEN.kicker)}</span>
             </div>
 
-            {/* The name is the venue's own and stays in Latin script in all
+            {/* The name is the company's own and stays in Latin script in all
                 three languages, so it is pinned left-to-right and aligned to
                 the reading edge by hand. */}
             <h1
@@ -82,19 +84,19 @@ export default function App() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href="#reserve"
+                href="#visit"
                 className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-[15px] font-bold transition-opacity hover:opacity-90"
                 style={{ background: GG.leaf, color: GG.onLeaf }}
               >
                 <CalendarCheck className="h-4 w-4" />
-                {t(GARDEN.ctaReserve)}
+                {t(GARDEN.ctaVisit)}
               </a>
               <a
-                href="#spaces"
+                href="#services"
                 className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-[15px] font-semibold transition-colors"
                 style={{ border: `1px solid ${GG.lineBright}`, color: GG.cream }}
               >
-                {t(GARDEN.ctaSpaces)}
+                {t(GARDEN.ctaServices)}
               </a>
             </div>
           </div>
@@ -109,7 +111,7 @@ export default function App() {
               <div key={stat.value}>
                 <dt
                   dir="ltr"
-                  className="font-display text-[clamp(1.6rem,4vw,2.3rem)] font-bold rtl:text-end"
+                  className="font-display text-[clamp(1.5rem,4vw,2.3rem)] font-bold rtl:text-end"
                   style={{ color: GG.leaf }}
                 >
                   {stat.value}
@@ -142,55 +144,90 @@ export default function App() {
         </div>
       </Section>
 
-      {/* ------------------------------------------------------------- Spaces */}
-      <Section id="spaces" className={HAIRLINE}>
+      {/* ----------------------------------------------------------- Services */}
+      <Section id="services" className={HAIRLINE}>
         <h2 className="font-display text-[28px] font-bold" style={{ color: GG.cream }}>
-          {t(GARDEN.spacesTitle)}
+          {t(GARDEN.servicesTitle)}
         </h2>
         <p className="mt-2 text-[14.5px]" style={{ color: GG.faint }}>
-          {t(GARDEN.spacesNote)}
+          {t(GARDEN.servicesNote)}
         </p>
 
         <div className="mt-7 grid gap-4 sm:grid-cols-2">
-          {GARDEN.spaces.map((space) => (
+          {GARDEN.services.map((service) => (
             <article
-              key={space.id}
+              key={service.id}
               className="rounded-2xl p-6"
               style={{ background: GG.panel, border: `1px solid ${GG.line}` }}
             >
-              <div className="flex items-baseline justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Sprout className="h-4 w-4 shrink-0" style={{ color: GG.leaf }} />
                 <h3 className="font-display text-[19px] font-bold" style={{ color: GG.cream }}>
-                  {t(space.name)}
+                  {t(service.name)}
                 </h3>
-                <span className="shrink-0 text-[12.5px] font-semibold" style={{ color: GG.leaf }}>
-                  {t(space.seats)}
-                </span>
               </div>
               <p className="mt-3 text-[14.5px] leading-relaxed" style={{ color: GG.muted }}>
-                {t(space.body)}
+                {t(service.body)}
               </p>
             </article>
           ))}
         </div>
       </Section>
 
-      {/* ----------------------------------------------------------- Packages */}
-      <Section id="packages" className={HAIRLINE}>
+      {/* ------------------------------------------------------ How it works */}
+      <Section id="how" className={HAIRLINE}>
         <h2 className="font-display text-[28px] font-bold" style={{ color: GG.cream }}>
-          {t(GARDEN.packagesTitle)}
+          {t(GARDEN.howTitle)}
+        </h2>
+        <p className="mt-2 text-[14.5px]" style={{ color: GG.faint }}>
+          {t(GARDEN.howNote)}
+        </p>
+
+        <ol className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {GARDEN.steps.map((step) => (
+            <li
+              key={step.n}
+              className="rounded-2xl p-5"
+              style={{ background: GG.panel, border: `1px solid ${GG.line}` }}
+            >
+              <span
+                dir="ltr"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full font-display text-[14px] font-bold"
+                style={{ background: GG.leaf, color: GG.onLeaf }}
+              >
+                {step.n}
+              </span>
+              <h3 className="mt-3 font-display text-[16px] font-bold" style={{ color: GG.cream }}>
+                {t(step.name)}
+              </h3>
+              <p className="mt-2 text-[14px] leading-relaxed" style={{ color: GG.muted }}>
+                {t(step.body)}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+      {/* -------------------------------------------------------------- Rates */}
+      <Section id="rates" className={HAIRLINE}>
+        <h2 className="font-display text-[28px] font-bold" style={{ color: GG.cream }}>
+          {t(GARDEN.ratesTitle)}
         </h2>
         <div className="mt-6 grid gap-x-12 md:grid-cols-2">
-          {GARDEN.packages.map((item) => (
+          {GARDEN.rates.map((item) => (
             <PriceRow key={item.name.en} name={t(item.name)} detail={t(item.detail)} price={t(item.price)} />
           ))}
         </div>
-        <p className="mt-5 text-[13.5px]" style={{ color: GG.faint }}>
-          {t(GARDEN.packagesNote)}
+        <p className="mt-5 text-[13.5px] leading-relaxed" style={{ color: GG.faint }}>
+          {t(GARDEN.ratesNote)}
+        </p>
+        <p className="mt-1.5 text-[13.5px]" style={{ color: GG.faint }}>
+          {t(GARDEN.currencyNote)}
         </p>
       </Section>
 
       {/* ------------------------------------------------------------ Gallery */}
-      <Section id="gallery" className={HAIRLINE}>
+      <Section id="work" className={HAIRLINE}>
         <h2 className="font-display text-[28px] font-bold" style={{ color: GG.cream }}>
           {t(GARDEN.galleryTitle)}
         </h2>
@@ -228,8 +265,8 @@ export default function App() {
         </div>
       </Section>
 
-      {/* -------------------------------------------------------- Reservation */}
-      <Section id="reserve" className={HAIRLINE}>
+      {/* --------------------------------------------------------- Site visit */}
+      <Section id="visit" className={HAIRLINE}>
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
             <p className="text-[12px] font-bold uppercase tracking-[0.22em]" style={{ color: GG.leaf }}>
@@ -248,12 +285,22 @@ export default function App() {
         </div>
       </Section>
 
-      {/* -------------------------------------------------------------- Visit */}
-      <Section id="visit">
+      {/* ------------------------------------------------------ Where we work */}
+      <Section>
         <h2 className="font-display text-[28px] font-bold" style={{ color: GG.cream }}>
-          {t(GARDEN.visitTitle)}
+          {t(GARDEN.reachTitle)}
         </h2>
         <div className="mt-7 grid gap-8 sm:grid-cols-3">
+          <div>
+            <div className="flex items-center gap-2" style={{ color: GG.leaf }}>
+              <MapPin className="h-4 w-4" />
+              <h3 className="font-display text-[16px] font-bold">{t(GARDEN.coverageTitle)}</h3>
+            </div>
+            <p className="mt-4 whitespace-pre-line text-[14.5px] leading-relaxed" style={{ color: GG.muted }}>
+              {t(GARDEN.coverage)}
+            </p>
+          </div>
+
           <div>
             <div className="flex items-center gap-2" style={{ color: GG.leaf }}>
               <Clock className="h-4 w-4" />
@@ -273,21 +320,16 @@ export default function App() {
 
           <div>
             <div className="flex items-center gap-2" style={{ color: GG.leaf }}>
-              <MapPin className="h-4 w-4" />
-              <h3 className="font-display text-[16px] font-bold">{t(GARDEN.addressTitle)}</h3>
+              <Sprout className="h-4 w-4" />
+              <h3 className="font-display text-[16px] font-bold">{t(GARDEN.officeTitle)}</h3>
             </div>
             <p className="mt-4 whitespace-pre-line text-[14.5px] leading-relaxed" style={{ color: GG.muted }}>
-              {t(GARDEN.address)}
+              {t(GARDEN.office)}
             </p>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2" style={{ color: GG.leaf }}>
-              <Timer className="h-4 w-4" />
-              <h3 className="font-display text-[16px] font-bold">{t(GARDEN.leadTimeTitle)}</h3>
-            </div>
-            <p className="mt-4 whitespace-pre-line text-[14.5px] leading-relaxed" style={{ color: GG.muted }}>
-              {t(GARDEN.leadTime)}
+            {/* Said plainly, because an address on a website reads as an
+                invitation and this one is a working yard. */}
+            <p className="mt-2 text-[13px] leading-relaxed" style={{ color: GG.faint }}>
+              {t(GARDEN.officeNote)}
             </p>
           </div>
         </div>

@@ -4,11 +4,16 @@
  */
 
 /**
- * The reservation flow.
+ * The site-visit request form.
+ *
+ * What is being booked is a visit to the client's own property, so the two
+ * fields that carry the most weight are the site address and the rough area.
+ * Everything else can be corrected on the phone; without an address there is
+ * nowhere to send anyone.
  *
  * Two audiences, one form. Switching to "Business" adds the five fields a
- * company booking actually needs — company name, role, registration number,
- * invoice address, purchase order — and nothing else changes, so a guest who
+ * company job actually needs — company name, role, registration number,
+ * invoice address, purchase order — and nothing else changes, so a client who
  * picks the wrong tab does not lose what they have typed.
  *
  * Validation is the server's job (server/reservations.ts) and this file
@@ -26,7 +31,7 @@
 import { useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { CalendarCheck, Check, Loader2, TriangleAlert, User, Building2 } from "lucide-react";
 import { useLang } from "./i18n";
-import { FORM, GARDEN, OCCASIONS } from "./content";
+import { FORM, GARDEN, PROJECTS } from "./content";
 import { GG } from "./theme";
 
 type Audience = "individual" | "business";
@@ -37,11 +42,12 @@ interface FormState {
   name: string;
   email: string;
   phone: string;
+  siteAddress: string;
+  areaM2: string;
+  service: string;
+  project: string;
   date: string;
   time: string;
-  guests: string;
-  space: string;
-  occasion: string;
   notes: string;
   company: string;
   companyRole: string;
@@ -54,11 +60,15 @@ const EMPTY: FormState = {
   name: "",
   email: "",
   phone: "",
+  siteAddress: "",
+  areaM2: "",
+  service: "design",
+  project: "villa-garden",
   date: "",
-  time: "20:00",
-  guests: "2",
-  space: "terrace",
-  occasion: "dining",
+  /* Mid-morning: the crew is out by then and the light is good for judging a
+     plot. A client can change it, but an empty time field is one more thing
+     to fill in for no reason. */
+  time: "10:00",
   notes: "",
   company: "",
   companyRole: "",
@@ -118,12 +128,12 @@ export function ReservationForm() {
   const set = (key: keyof FormState) => (value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  /* Switching audience changes which occasions are on offer, so an occasion
-     chosen on the other tab would submit an id the server rejects. */
+  /* Switching audience changes which site types are on offer, so one chosen
+     on the other tab would submit an id the server rejects. */
   function switchTo(next: Audience) {
     if (next === audience) return;
     setAudience(next);
-    setForm((prev) => ({ ...prev, occasion: OCCASIONS[next][0].id }));
+    setForm((prev) => ({ ...prev, project: PROJECTS[next][0].id }));
     setErrors({});
   }
 
@@ -142,7 +152,7 @@ export function ReservationForm() {
         body: JSON.stringify({
           ...form,
           audience,
-          guests: Number(form.guests),
+          areaM2: Number(form.areaM2),
           lang,
           website: honeypot.current?.value ?? "",
         }),
@@ -261,8 +271,92 @@ export function ReservationForm() {
         </div>
       </fieldset>
 
-      {/* ------------------------------------------------------ the booking */}
-      <div className="mt-7 grid gap-4 sm:grid-cols-2">
+      {/* --------------------------------------------------------- the site
+
+          First, and full width: this is the job. Everything below it is
+          detail, and a client who fills in only this and their phone number
+          can still be helped. */}
+      <div className="mt-7">
+        <Label htmlFor={field("siteAddress").id} hint={c(FORM.siteAddressHint)}>
+          {c(FORM.siteAddress)}
+        </Label>
+        <input
+          id={field("siteAddress").id}
+          type="text"
+          required
+          autoComplete="street-address"
+          value={form.siteAddress}
+          onChange={(e) => set("siteAddress")(e.target.value)}
+          aria-invalid={field("siteAddress").invalid}
+          aria-describedby={errors.siteAddress ? field("siteAddress").errorId : undefined}
+          className="gg-field"
+        />
+        <FieldError id={field("siteAddress").errorId} message={errors.siteAddress} />
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <Label htmlFor={field("service").id}>{c(FORM.service)}</Label>
+          <select
+            id={field("service").id}
+            value={form.service}
+            onChange={(e) => set("service")(e.target.value)}
+            aria-invalid={field("service").invalid}
+            aria-describedby={errors.service ? field("service").errorId : undefined}
+            className="gg-field"
+          >
+            {GARDEN.services.map((service) => (
+              <option key={service.id} value={service.id}>
+                {c(service.name)}
+              </option>
+            ))}
+          </select>
+          <FieldError id={field("service").errorId} message={errors.service} />
+        </div>
+
+        <div>
+          <Label htmlFor={field("project").id}>{c(FORM.project)}</Label>
+          <select
+            id={field("project").id}
+            value={form.project}
+            onChange={(e) => set("project")(e.target.value)}
+            aria-invalid={field("project").invalid}
+            aria-describedby={errors.project ? field("project").errorId : undefined}
+            className="gg-field"
+          >
+            {PROJECTS[audience].map((project) => (
+              <option key={project.id} value={project.id}>
+                {c(project.name)}
+              </option>
+            ))}
+          </select>
+          <FieldError id={field("project").errorId} message={errors.project} />
+        </div>
+
+        <div>
+          <Label htmlFor={field("areaM2").id} hint={c(FORM.areaHint)}>
+            {c(FORM.areaM2)}
+          </Label>
+          <input
+            id={field("areaM2").id}
+            type="number"
+            required
+            min={1}
+            max={50000}
+            inputMode="numeric"
+            placeholder="200"
+            value={form.areaM2}
+            onChange={(e) => set("areaM2")(e.target.value)}
+            aria-invalid={field("areaM2").invalid}
+            aria-describedby={errors.areaM2 ? field("areaM2").errorId : undefined}
+            className="gg-field"
+            dir="ltr"
+          />
+          <FieldError id={field("areaM2").errorId} message={errors.areaM2} />
+        </div>
+
+        <div className="hidden sm:block" aria-hidden="true" />
+
         <div>
           <Label htmlFor={field("date").id}>{c(FORM.date)}</Label>
           <input
@@ -294,63 +388,6 @@ export function ReservationForm() {
             dir="ltr"
           />
           <FieldError id={field("time").errorId} message={errors.time} />
-        </div>
-
-        <div>
-          <Label htmlFor={field("guests").id}>{c(FORM.guests)}</Label>
-          <input
-            id={field("guests").id}
-            type="number"
-            required
-            min={1}
-            max={220}
-            inputMode="numeric"
-            value={form.guests}
-            onChange={(e) => set("guests")(e.target.value)}
-            aria-invalid={field("guests").invalid}
-            aria-describedby={errors.guests ? field("guests").errorId : undefined}
-            className="gg-field"
-            dir="ltr"
-          />
-          <FieldError id={field("guests").errorId} message={errors.guests} />
-        </div>
-
-        <div>
-          <Label htmlFor={field("space").id}>{c(FORM.space)}</Label>
-          <select
-            id={field("space").id}
-            value={form.space}
-            onChange={(e) => set("space")(e.target.value)}
-            aria-invalid={field("space").invalid}
-            aria-describedby={errors.space ? field("space").errorId : undefined}
-            className="gg-field"
-          >
-            {GARDEN.spaces.map((space) => (
-              <option key={space.id} value={space.id}>
-                {c(space.name)} — {c(space.seats)}
-              </option>
-            ))}
-          </select>
-          <FieldError id={field("space").errorId} message={errors.space} />
-        </div>
-
-        <div className="sm:col-span-2">
-          <Label htmlFor={field("occasion").id}>{c(FORM.occasion)}</Label>
-          <select
-            id={field("occasion").id}
-            value={form.occasion}
-            onChange={(e) => set("occasion")(e.target.value)}
-            aria-invalid={field("occasion").invalid}
-            aria-describedby={errors.occasion ? field("occasion").errorId : undefined}
-            className="gg-field"
-          >
-            {OCCASIONS[audience].map((occasion) => (
-              <option key={occasion.id} value={occasion.id}>
-                {c(occasion.name)}
-              </option>
-            ))}
-          </select>
-          <FieldError id={field("occasion").errorId} message={errors.occasion} />
         </div>
       </div>
 

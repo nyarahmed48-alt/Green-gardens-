@@ -21,13 +21,13 @@ import { GG } from "../theme";
  * A photograph, or a placeholder standing in for one.
  *
  * Pass a `photo` and it renders that file. Leave it off and the tile falls
- * back to a gradient in the venue's own palette, which reads as a deliberate
+ * back to a gradient in the company's own palette, which reads as a deliberate
  * placeholder rather than pretending to be a picture of something.
  *
  * The fallback is not only for slots nobody has filled: if a file is missing
  * or fails to load in a visitor's browser, the tile quietly becomes a gradient
- * again instead of showing a broken-image icon on the page a guest is judging
- * the venue by.
+ * again instead of showing a broken-image icon on the page a client is
+ * judging the work by.
  *
  * The gradient keeps its own dimensions, so adding a photograph later never
  * moves the rest of the page.
@@ -63,9 +63,9 @@ export function PhotoTile({
           src={photo.src}
           alt={t(photo.alt)}
           onError={() => setFailed(true)}
-          /* Lazy by default: the gallery sits well below the fold, and a guest
+          /* Lazy by default: the gallery sits well below the fold, and someone
              on phone data should not wait for six photographs before reading
-             the prices. */
+             the rates. */
           loading="lazy"
           decoding="async"
           className="h-full w-full object-cover"

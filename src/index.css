@@ -111,3 +111,18 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .gg-rise { animation: none; }
 }
+
+/* The assistant's typing indicator. Three dots lifting in sequence — it reads
+   as a reply being written, where a spinner reads as a stall. */
+@keyframes gg-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30%           { opacity: 1;    transform: translateY(-3px); }
+}
+
+.gg-dot {
+  animation: gg-dot 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-dot { animation: none; opacity: 0.6; }
+}

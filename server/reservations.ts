@@ -4,35 +4,41 @@
  */
 
 /**
- * The reservation flow, minus transport, so all four deployment targets share
- * one copy of it — the same arrangement as the concierge next door.
+ * Site-visit requests, minus transport, so all four deployment targets share
+ * one copy of the flow — the same arrangement as Green AI next door.
  *
- * A reservation can come from a private guest or from a company, and the two
- * are genuinely different bookings rather than one form with a checkbox: a
- * company needs an invoice address, a registration number and often a purchase
- * order, and none of that should be asked of someone booking a birthday
- * dinner. So the audience decides which fields are required, and the emails
- * that go out are laid out differently for each.
+ * What is being booked is a VISIT TO THE CLIENT'S PROPERTY. Green Gardens
+ * builds gardens; there is nowhere for a client to come to. So the two fields
+ * that matter most here are ones a table booking would never carry: where the
+ * site is, and roughly how big it is. Without an address there is no visit to
+ * make, which is why it is required of everyone.
  *
- * Two messages leave here on a successful booking:
+ * A request can come from a private client or from a company, and the two are
+ * genuinely different jobs rather than one form with a checkbox: a company
+ * needs an invoice address, a registration number and often a purchase order,
+ * and none of that should be asked of someone who wants their back garden
+ * replanted. So the audience decides which fields are required, and the emails
+ * are laid out differently for each.
  *
- *   1. The desk copy, to MAIL_TO. English, dense, every field —
- *      it is a work item, and the staff reading it need it to look the same
- *      every time regardless of which language the guest used.
- *   2. The guest copy, in the language they filled the form in, when they gave
- *      an address and confirmations are switched on.
+ * Two messages leave here on a successful request:
  *
- * If the desk copy cannot be sent, the booking FAILS and says so. A form that
- * thanks someone for a reservation nobody received is worse than one that
- * admits it is not wired up.
+ *   1. The office copy, to MAIL_TO. English, dense, every field — it is a work
+ *      item, and whoever schedules the crew needs it to look the same every
+ *      time regardless of which language the client wrote in.
+ *   2. The client's copy, in the language they filled the form in, when they
+ *      gave an address and confirmations are switched on.
+ *
+ * If the office copy cannot be sent, the request FAILS and says so. A form
+ * that thanks someone for a visit nobody booked is worse than one that admits
+ * it is not wired up.
  */
 
 import {
-  OCCASIONS,
-  SPACE_IDS,
-  VENUE,
-  occasionName,
-  spaceName,
+  COMPANY,
+  PROJECTS,
+  SERVICE_IDS,
+  projectName,
+  serviceName,
   type Audience,
 } from "./brand";
 import { mailReadiness, type MailSettings } from "./settings";
@@ -55,13 +61,17 @@ export interface Reservation {
   name: string;
   email: string;
   phone: string;
+  /** Preferred date and time for the visit. */
   date: string;
   time: string;
-  guests: number;
-  space: string;
-  occasion: string;
+  /** Where the garden is. The whole point of the request. */
+  siteAddress: string;
+  /** Rough size in square metres. Clients estimate; the visit measures. */
+  areaM2: number;
+  service: string;
+  project: string;
   notes: string;
-  /** Business bookings only. */
+  /** Business requests only. */
   company: string;
   companyRole: string;
   taxId: string;
@@ -73,7 +83,7 @@ export interface Reservation {
 
 /* ============================================================ validation === */
 
-const MAX = { name: 120, email: 160, phone: 40, notes: 1200, company: 160, role: 120, taxId: 60, po: 80 };
+const MAX = { name: 120, email: 160, phone: 40, address: 400, notes: 1200, company: 160, role: 120, taxId: 60, po: 80 };
 
 const text = (value: unknown, limit: number): string =>
   typeof value === "string" ? value.trim().slice(0, limit) : "";
@@ -155,14 +165,14 @@ export function validate(raw: any, lang: Lang, now: Date): Validation {
     });
   } else if (day < today) {
     errors.date = say({
-      ar: "هذا التاريخ مضى. اختر يومًا قادمًا.",
-      ckb: "ئەم بەروارە تێپەڕیوە. ڕۆژێکی داهاتوو هەڵبژێرە.",
-      en: "That date has passed. Pick a day still to come.",
+      ar: "هذا التاريخ مضى. اختر يومًا قادمًا للزيارة.",
+      ckb: "ئەم بەروارە تێپەڕیوە. ڕۆژێکی داهاتوو بۆ سەردانەکە هەڵبژێرە.",
+      en: "That date has passed. Pick a day still to come for the visit.",
     });
   } else if (day > today + MAX_DAYS_AHEAD * DAY_MS) {
     errors.date = say({
-      ar: "هذا التاريخ بعيد جدًا. راسلنا مباشرة لحجز أبعد من ذلك.",
-      ckb: "ئەم بەروارە زۆر دوورە. بۆ حجزی دوورتر ڕاستەوخۆ پەیوەندیمان پێوە بکە.",
+      ar: "هذا التاريخ بعيد جدًا. راسلنا مباشرة لموعد أبعد من ذلك.",
+      ckb: "ئەم بەروارە زۆر دوورە. بۆ کاتێکی دوورتر ڕاستەوخۆ پەیوەندیمان پێوە بکە.",
       en: "That is further out than the diary goes. Contact us directly for a date that far ahead.",
     });
   }
@@ -176,31 +186,44 @@ export function validate(raw: any, lang: Lang, now: Date): Validation {
     });
   }
 
-  const guests = Number(raw?.guests);
-  if (!Number.isInteger(guests) || guests < 1 || guests > VENUE.maxGuests) {
-    errors.guests = say({
-      ar: `عدد الضيوف بين 1 و${VENUE.maxGuests}.`,
-      ckb: `ژمارەی میوانان لە نێوان 1 و ${VENUE.maxGuests} بێت.`,
-      en: `Guests must be between 1 and ${VENUE.maxGuests}.`,
+  /* The address is the job. Without it there is nowhere to send a crew, so it
+     is required of everyone — the one field a client cannot skip. */
+  const siteAddress = text(raw?.siteAddress, MAX.address);
+  if (siteAddress.length < 8) {
+    errors.siteAddress = say({
+      ar: "اكتب عنوان الموقع — أين الحديقة؟",
+      ckb: "ناونیشانی شوێنەکە بنووسە — باخچەکە لە کوێیە؟",
+      en: "Enter the site address — where is the garden?",
     });
   }
 
-  const space = text(raw?.space, 40);
-  if (!SPACE_IDS.includes(space)) {
-    errors.space = say({
-      ar: "اختر إحدى المساحات.",
-      ckb: "یەکێک لە شوێنەکان هەڵبژێرە.",
-      en: "Choose one of the spaces.",
+  /* An estimate, not a survey. Clients pace it out or guess from the plot, and
+     the visit is what measures it, so the range is wide on purpose. */
+  const areaM2 = Number(raw?.areaM2);
+  if (!Number.isFinite(areaM2) || areaM2 < 1 || areaM2 > COMPANY.maxAreaM2) {
+    errors.areaM2 = say({
+      ar: `المساحة التقريبية بين 1 و${COMPANY.maxAreaM2.toLocaleString("en-US")} متر مربع.`,
+      ckb: `ڕووبەری نزیکەیی لە نێوان 1 و ${COMPANY.maxAreaM2.toLocaleString("en-US")} مەتر چوارگۆشە بێت.`,
+      en: `The approximate area should be between 1 and ${COMPANY.maxAreaM2.toLocaleString("en-US")} m².`,
     });
   }
 
-  const occasion = text(raw?.occasion, 40);
-  const allowed = (OCCASIONS[audience] as readonly { id: string }[]).map((o) => o.id);
-  if (!allowed.includes(occasion)) {
-    errors.occasion = say({
-      ar: "اختر نوع المناسبة.",
-      ckb: "جۆری بۆنەکە هەڵبژێرە.",
-      en: "Choose what the booking is for.",
+  const service = text(raw?.service, 40);
+  if (!SERVICE_IDS.includes(service)) {
+    errors.service = say({
+      ar: "اختر الخدمة المطلوبة.",
+      ckb: "خزمەتگوزارییە پێویستەکە هەڵبژێرە.",
+      en: "Choose the service you need.",
+    });
+  }
+
+  const project = text(raw?.project, 40);
+  const allowed = (PROJECTS[audience] as readonly { id: string }[]).map((p) => p.id);
+  if (!allowed.includes(project)) {
+    errors.project = say({
+      ar: "اختر نوع الموقع.",
+      ckb: "جۆری شوێنەکە هەڵبژێرە.",
+      en: "Choose what kind of site it is.",
     });
   }
 
@@ -243,9 +266,10 @@ export function validate(raw: any, lang: Lang, now: Date): Validation {
       phone,
       date,
       time,
-      guests,
-      space,
-      occasion,
+      siteAddress,
+      areaM2,
+      service,
+      project,
       notes: text(raw?.notes, MAX.notes),
       company,
       companyRole,
@@ -294,16 +318,19 @@ interface Row {
   value: string;
 }
 
-/** Rows the desk sees, in the order the desk works through them. */
-function deskRows(r: Reservation): Row[] {
+/** Rows the office sees, in the order it works through them.
+ *
+ *  The address is second, under the reference: whoever reads this is deciding
+ *  which crew goes where, and where is the first thing they need. */
+function officeRows(r: Reservation): Row[] {
   const rows: Row[] = [
     { label: "Reference", value: r.reference },
-    { label: "Booking type", value: r.audience === "business" ? "Business" : "Individual" },
-    { label: "Date", value: r.date },
-    { label: "Time", value: r.time },
-    { label: "Guests", value: String(r.guests) },
-    { label: "Space", value: spaceName(r.space) },
-    { label: "For", value: occasionName(r.audience, r.occasion) },
+    { label: "Site address", value: r.siteAddress },
+    { label: "Client type", value: r.audience === "business" ? "Business" : "Individual" },
+    { label: "Service wanted", value: serviceName(r.service) },
+    { label: "Site type", value: projectName(r.audience, r.project) },
+    { label: "Approx. area", value: `${r.areaM2.toLocaleString("en-US")} m²` },
+    { label: "Visit requested", value: `${r.date} at ${r.time}` },
     { label: "Name", value: r.name },
     { label: "Email", value: r.email },
     { label: "Phone", value: r.phone },
@@ -344,7 +371,7 @@ function shell(title: string, intro: string, rows: Row[], footer: string, dir: "
   <body style="margin:0;padding:24px;background:#050806;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
     <div style="max-width:560px;margin:0 auto;background:${DARK};border:1px solid #1c2a21;border-radius:16px;overflow:hidden;">
       <div style="padding:22px 26px;background:linear-gradient(135deg,#12211a,#0b120e);border-bottom:1px solid #1c2a21;">
-        <div style="color:${GREEN};font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;">${escapeHtml(VENUE.name)}</div>
+        <div style="color:${GREEN};font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;">${escapeHtml(COMPANY.name)}</div>
         <div style="color:${CREAM};font-size:20px;font-weight:700;margin-top:6px;">${escapeHtml(title)}</div>
       </div>
       <div style="padding:22px 26px;">
@@ -361,7 +388,7 @@ function shell(title: string, intro: string, rows: Row[], footer: string, dir: "
 
 const plain = (title: string, intro: string, rows: Row[], footer: string): string =>
   [
-    VENUE.name.toUpperCase(),
+    COMPANY.name.toUpperCase(),
     title,
     "",
     intro,
@@ -371,71 +398,71 @@ const plain = (title: string, intro: string, rows: Row[], footer: string): strin
     footer,
   ].join("\n");
 
-/** The desk copy. English by design — see the note at the top of the file. */
-export function deskEmail(r: Reservation, settings: MailSettings): OutgoingMail {
-  const rows = deskRows(r);
-  const kind = r.audience === "business" ? "Business" : "Individual";
-  const title = `${kind} reservation — ${r.date} at ${r.time}`;
-  const intro = `${r.name} has requested ${spaceName(r.space)} for ${r.guests} ${r.guests === 1 ? "guest" : "guests"}. Confirm with them directly; this message is the only record.`;
-  const footer = `Sent by the ${VENUE.name} website. Reply to this message to answer the guest.`;
+/** The office copy. English by design — see the note at the top of the file. */
+export function officeEmail(r: Reservation, settings: MailSettings): OutgoingMail {
+  const rows = officeRows(r);
+  const kind = r.audience === "business" ? "Business" : "Private";
+  const title = `Site visit requested — ${r.date} at ${r.time}`;
+  const intro = `${r.name} has asked for a visit to ${r.siteAddress}, for ${serviceName(r.service).toLowerCase()} on roughly ${r.areaM2.toLocaleString("en-US")} m². Confirm the appointment with them directly; this message is the only record.`;
+  const footer = `Sent by the ${COMPANY.name} website. Reply to this message to answer the client.`;
 
   return {
     from: settings.from,
     to: settings.to,
     bcc: settings.bcc,
-    // So hitting reply in the desk mailbox writes to the guest, not to itself.
+    // So hitting reply in the office mailbox writes to the client, not itself.
     replyTo: r.email,
-    subject: `[${r.reference}] ${kind} reservation — ${r.date} ${r.time}, ${r.guests} guests`,
+    subject: `[${r.reference}] ${kind} site visit — ${r.date} ${r.time} — ${serviceName(r.service)}`,
     text: plain(title, intro, rows, footer),
     html: shell(title, intro, rows, footer, "ltr"),
   };
 }
 
-/** The guest copy, in the language they used. */
-export function guestEmail(r: Reservation, settings: MailSettings): OutgoingMail {
+/** The client's copy, in the language they used. */
+export function clientEmail(r: Reservation, settings: MailSettings): OutgoingMail {
   const say = (choices: Says) => choices[r.lang];
 
   const title = say({
-    ar: "استلمنا طلب حجزك",
-    ckb: "داواکاریی حجزەکەت پێگەیشت",
-    en: "We have your reservation request",
+    ar: "استلمنا طلب زيارة الموقع",
+    ckb: "داواکاریی سەردانی شوێنەکەت پێگەیشت",
+    en: "We have your site visit request",
   });
 
   const intro = say({
-    ar: `شكرًا ${r.name}. هذا طلب حجز وليس تأكيدًا نهائيًا — يراجعه مكتب الحجوزات ويتواصل معك لتثبيته. رقم الطلب ${r.reference}.`,
-    ckb: `سوپاس ${r.name}. ئەمە داواکاریی حجزە نەک دڵنیایی کۆتایی — نووسینگەی حجز پێداچوونەوەی بۆ دەکات و پەیوەندیت پێوە دەکات بۆ جێگیرکردنی. ژمارەی داواکاری ${r.reference}.`,
-    en: `Thank you, ${r.name}. This is a request rather than a confirmed booking — the reservations desk will review it and come back to you to confirm. Your reference is ${r.reference}.`,
+    ar: `شكرًا ${r.name}. هذا طلب زيارة وليس موعدًا مؤكدًا — يراجعه المكتب ويتواصل معك لتثبيت الوقت. الزيارة مجانية ولا يترتب عليها أي التزام، وبعدها نرسل لك عرض السعر. رقم الطلب ${r.reference}.`,
+    ckb: `سوپاس ${r.name}. ئەمە داواکاریی سەردانە نەک کاتێکی جێگیر — نووسینگە پێداچوونەوەی بۆ دەکات و پەیوەندیت پێوە دەکات بۆ جێگیرکردنی کاتەکە. سەردانەکە بێبەرامبەرە و هیچ ئەرکێکت ناخاتە سەر، و دوای ئەوە نرخەکەت بۆ دەنێرین. ژمارەی داواکاری ${r.reference}.`,
+    en: `Thank you, ${r.name}. This is a request rather than a confirmed appointment — the office will review it and come back to you to fix a time. The visit is free and commits you to nothing; the quotation follows it. Your reference is ${r.reference}.`,
   });
 
   const label = (choices: Says) => say(choices);
   const rows: Row[] = [
     { label: label({ ar: "رقم الطلب", ckb: "ژمارەی داواکاری", en: "Reference" }), value: r.reference },
-    { label: label({ ar: "التاريخ", ckb: "بەروار", en: "Date" }), value: r.date },
-    { label: label({ ar: "الوقت", ckb: "کات", en: "Time" }), value: r.time },
-    { label: label({ ar: "عدد الضيوف", ckb: "ژمارەی میوان", en: "Guests" }), value: String(r.guests) },
-    { label: label({ ar: "المكان", ckb: "شوێن", en: "Space" }), value: spaceName(r.space) },
-    { label: label({ ar: "المناسبة", ckb: "بۆنە", en: "Occasion" }), value: occasionName(r.audience, r.occasion) },
+    { label: label({ ar: "عنوان الموقع", ckb: "ناونیشانی شوێن", en: "Site address" }), value: r.siteAddress },
+    { label: label({ ar: "الخدمة", ckb: "خزمەتگوزاری", en: "Service" }), value: serviceName(r.service) },
+    { label: label({ ar: "نوع الموقع", ckb: "جۆری شوێن", en: "Site type" }), value: projectName(r.audience, r.project) },
+    { label: label({ ar: "المساحة التقريبية", ckb: "ڕووبەری نزیکەیی", en: "Approx. area" }), value: `${r.areaM2.toLocaleString("en-US")} m²` },
+    { label: label({ ar: "موعد الزيارة المطلوب", ckb: "کاتی داواکراوی سەردان", en: "Visit requested" }), value: `${r.date} — ${r.time}` },
   ];
   if (r.audience === "business" && r.company) {
     rows.push({ label: label({ ar: "الشركة", ckb: "کۆمپانیا", en: "Company" }), value: r.company });
   }
 
   const footer = say({
-    ar: `${VENUE.name} — ${VENUE.address}. لتعديل الطلب أو إلغائه، ردّ على هذه الرسالة.`,
-    ckb: `${VENUE.name} — ${VENUE.address}. بۆ گۆڕین یان هەڵوەشاندنەوەی داواکارییەکە، وەڵامی ئەم نامەیە بدەرەوە.`,
-    en: `${VENUE.name} — ${VENUE.address}. To change or cancel, reply to this message.`,
+    ar: `${COMPANY.name} — ${COMPANY.phone} — ${COMPANY.email}. لتعديل الطلب أو إلغائه، ردّ على هذه الرسالة.`,
+    ckb: `${COMPANY.name} — ${COMPANY.phone} — ${COMPANY.email}. بۆ گۆڕین یان هەڵوەشاندنەوەی داواکارییەکە، وەڵامی ئەم نامەیە بدەرەوە.`,
+    en: `${COMPANY.name} — ${COMPANY.phone} — ${COMPANY.email}. To change or cancel, reply to this message.`,
   });
 
   const subject = say({
-    ar: `طلب حجز ${VENUE.name} — ${r.reference}`,
-    ckb: `داواکاریی حجزی ${VENUE.name} — ${r.reference}`,
-    en: `${VENUE.name} reservation request — ${r.reference}`,
+    ar: `طلب زيارة موقع ${COMPANY.name} — ${r.reference}`,
+    ckb: `داواکاریی سەردانی شوێنی ${COMPANY.name} — ${r.reference}`,
+    en: `${COMPANY.name} site visit request — ${r.reference}`,
   });
 
   return {
     from: settings.from,
     to: [r.email],
-    // A guest replying to their confirmation is answered by the desk.
+    // A client replying to their confirmation is answered by the office.
     replyTo: settings.to[0],
     subject,
     text: plain(title, intro, rows, footer),
@@ -460,11 +487,12 @@ export interface ReservationRequest {
 }
 
 /**
- * Take one reservation.
+ * Take one site-visit request.
  *
- * Success means the desk copy was accepted by the mail provider. Anything less
- * is reported as a failure with somewhere else to go, because a booking the
- * venue never sees is a guest arriving to no table.
+ * Success means the office copy was accepted by the mail provider. Anything
+ * less is reported as a failure with somewhere else to go, because a request
+ * the office never sees is a client waiting in a garden for a crew that was
+ * never told to come.
  */
 export async function handleReservation({
   payload,
@@ -503,22 +531,22 @@ export async function handleReservation({
     /* Unconfigured is a supported state everywhere in this codebase, but it
        cannot be a silent one here. The reason goes to the log for whoever
        deployed it; the guest gets a way to reach a human. */
-    console.warn(`Green Gardens reservations are not configured: ${readiness.reason}`);
+    console.warn(`Green Gardens site-visit requests are not configured: ${readiness.reason}`);
     return {
       status: 503,
       body: {
         error: "NOT_CONFIGURED",
         message: say({
-          ar: "نظام الحجز غير مفعّل على هذه النسخة، فلم يُرسَل طلبك. تواصل معنا مباشرة وسنحجز لك.",
-          ckb: "سیستەمی حجز لەسەر ئەم نەخشەیە چالاک نەکراوە، بۆیە داواکارییەکەت نەنێردرا. ڕاستەوخۆ پەیوەندیمان پێوە بکە و بۆت حجز دەکەین.",
-          en: "Reservations aren't switched on for this deployment, so your request was not sent. Contact us directly and we'll book it for you.",
+          ar: `نموذج الطلب غير مفعّل على هذه النسخة، فلم يُرسَل طلبك. اتصل بنا على ${COMPANY.phone} وسنحدّد لك موعد الزيارة.`,
+          ckb: `فۆرمی داواکاری لەسەر ئەم نەخشەیە چالاک نەکراوە، بۆیە داواکارییەکەت نەنێردرا. پەیوەندی بکە بە ${COMPANY.phone} و کاتی سەردانەکەت بۆ دیاری دەکەین.`,
+          en: `The request form isn't switched on for this deployment, so nothing was sent. Call us on ${COMPANY.phone} and we'll arrange the visit.`,
         }),
       },
     };
   }
 
   try {
-    await send(deskEmail(reservation, settings), settings);
+    await send(officeEmail(reservation, settings), settings);
   } catch (err) {
     const detail = err instanceof MailError ? err.message : String(err);
     console.error(`Green Gardens reservation ${reservation.reference} could not be delivered:`, detail);
@@ -527,26 +555,25 @@ export async function handleReservation({
       body: {
         error: "NOT_DELIVERED",
         message: say({
-          ar: "تعذّر إرسال طلبك في هذه اللحظة. حاول مرة أخرى بعد قليل، أو تواصل معنا مباشرة.",
-          ckb: "لەم ساتەدا نەتوانرا داواکارییەکەت بنێردرێت. دوای کەمێک دووبارە هەوڵ بدەرەوە، یان ڕاستەوخۆ پەیوەندیمان پێوە بکە.",
-          en: "Your request couldn't be sent just now. Try again in a moment, or contact us directly.",
+          ar: `تعذّر إرسال طلبك في هذه اللحظة. حاول مرة أخرى بعد قليل، أو اتصل بنا على ${COMPANY.phone}.`,
+          ckb: `لەم ساتەدا نەتوانرا داواکارییەکەت بنێردرێت. دوای کەمێک دووبارە هەوڵ بدەرەوە، یان پەیوەندی بکە بە ${COMPANY.phone}.`,
+          en: `Your request couldn't be sent just now. Try again in a moment, or call us on ${COMPANY.phone}.`,
         }),
       },
     };
   }
 
-  /* The guest's copy is a courtesy, not the booking. If their mail server
-     bounces it the desk still has the reservation, so a failure here is
-     logged and nothing more — telling the guest their confirmed booking
-     failed would be false. */
+  /* The client's copy is a courtesy, not the request. If their mail server
+     bounces it, the office still has the job, so a failure here is logged and
+     nothing more — telling the client their request failed would be false. */
   let confirmationSent = false;
   if (settings.confirmGuest) {
     try {
-      await send(guestEmail(reservation, settings), settings);
+      await send(clientEmail(reservation, settings), settings);
       confirmationSent = true;
     } catch (err) {
       console.warn(
-        `Green Gardens confirmation to the guest for ${reservation.reference} failed:`,
+        `Green Gardens confirmation to the client for ${reservation.reference} failed:`,
         err instanceof MailError ? err.message : err,
       );
     }
@@ -559,9 +586,9 @@ export async function handleReservation({
       reference: reservation.reference,
       confirmationSent,
       message: say({
-        ar: `استلمنا طلبك. رقمه ${reservation.reference}، وسنتواصل معك لتأكيد الحجز.`,
-        ckb: `داواکارییەکەت پێگەیشت. ژمارەکەی ${reservation.reference}ـە، و پەیوەندیت پێوە دەکەین بۆ دڵنیاکردنەوەی حجزەکە.`,
-        en: `We have your request. It is reference ${reservation.reference}, and we'll be in touch to confirm.`,
+        ar: `استلمنا طلبك. رقمه ${reservation.reference}، وسنتواصل معك لتحديد موعد الزيارة.`,
+        ckb: `داواکارییەکەت پێگەیشت. ژمارەکەی ${reservation.reference}ـە، و پەیوەندیت پێوە دەکەین بۆ دیاریکردنی کاتی سەردانەکە.`,
+        en: `We have your request. It is reference ${reservation.reference}, and we'll be in touch to fix a time for the visit.`,
       }),
     },
   };

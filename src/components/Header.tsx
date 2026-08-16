@@ -4,16 +4,16 @@
  */
 
 /**
- * The venue's own header: mark, section links, language switch, and one
- * booking action that stays visible at every width.
+ * The company's header: mark, section links, language switch, and the one
+ * action worth taking — booking the free site visit — visible at every width.
  *
  * It sits over the hero rather than above it, and only takes on a background
- * once the page scrolls — a solid bar across the top of a full-bleed hero
- * costs the photograph its best 70 pixels.
+ * once the page scrolls: a solid bar across the top of a full-bleed hero costs
+ * the photograph its best 70 pixels.
  *
  * On a phone the section links collapse into a sheet, but the language switch
- * and the Reserve button never do. Those are the two things a guest opens this
- * site to press, and burying either behind a hamburger is how a booking is
+ * and the visit button never do. Those are the two things a client opens this
+ * site to press, and burying either behind a hamburger is how an enquiry is
  * lost.
  */
 
@@ -24,10 +24,10 @@ import { NAV } from "../content";
 import { GG } from "../theme";
 
 const SECTIONS = [
-  { href: "#spaces", label: NAV.spaces },
-  { href: "#packages", label: NAV.packages },
-  { href: "#gallery", label: NAV.gallery },
-  { href: "#visit", label: NAV.visit },
+  { href: "#services", label: NAV.services },
+  { href: "#how", label: NAV.how },
+  { href: "#rates", label: NAV.rates },
+  { href: "#work", label: NAV.work },
 ];
 
 /** The mark: an olive leaf and the wordmark, which stays in Latin script. */
@@ -169,13 +169,13 @@ export function Header() {
               one whose meaning survives as a symbol. The accessible name stays
               either way. */}
           <a
-            href="#reserve"
-            aria-label={t(NAV.reserve)}
+            href="#visit"
+            aria-label={t(NAV.visit)}
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[13.5px] font-bold transition-opacity hover:opacity-90 sm:px-4"
             style={{ background: GG.leaf, color: GG.onLeaf }}
           >
             <CalendarCheck className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t(NAV.reserve)}</span>
+            <span className="hidden sm:inline">{t(NAV.visit)}</span>
           </a>
 
           <button

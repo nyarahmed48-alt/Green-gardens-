@@ -6,12 +6,12 @@
 /**
  * The footer. Address, hours and the two ways to reach a person.
  *
- * WhatsApp comes first among them because it is the channel a guest in Erbil
+ * WhatsApp comes first among them because it is the channel a client in Erbil
  * will actually use, and it opens with the message half-written so nobody has
  * to think of an opening line.
  */
 
-import { Instagram, Mail, MessageCircle, Phone } from "lucide-react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
 import { CONTACT, FOOTER, GARDEN, whatsapp } from "../content";
 import { useLang } from "../i18n";
 import { GG } from "../theme";
@@ -20,9 +20,9 @@ export function Footer() {
   const { t } = useLang();
 
   const prefill = t({
-    ar: "مرحبًا، أود الاستفسار عن الحجز في Green Gardens.",
-    ckb: "سڵاو، دەمەوێت دەربارەی حجز لە Green Gardens بپرسم.",
-    en: "Hello, I'd like to ask about booking Green Gardens.",
+    ar: "مرحبًا، أود الاستفسار عن تصميم/تنفيذ حديقة مع Green Gardens.",
+    ckb: "سڵاو، دەمەوێت دەربارەی دیزاین/دروستکردنی باخچە لەگەڵ Green Gardens بپرسم.",
+    en: "Hello, I'd like to ask about a garden with Green Gardens.",
   });
 
   return (
@@ -37,7 +37,10 @@ export function Footer() {
               {t(FOOTER.blurb)}
             </p>
             <p className="mt-5 whitespace-pre-line text-[14px] leading-relaxed" style={{ color: GG.faint }}>
-              {t(GARDEN.address)}
+              {t(GARDEN.office)}
+            </p>
+            <p className="mt-1.5 text-[13px]" style={{ color: GG.faint }}>
+              {t(GARDEN.officeNote)}
             </p>
           </div>
 
@@ -76,18 +79,6 @@ export function Footer() {
                 >
                   <Mail className="h-4 w-4 shrink-0" style={{ color: GG.leaf }} />
                   <span dir="ltr">{CONTACT.email}</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`https://instagram.com/${CONTACT.instagram}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 transition-colors hover:opacity-80"
-                  style={{ color: GG.muted }}
-                >
-                  <Instagram className="h-4 w-4 shrink-0" style={{ color: GG.leaf }} />
-                  <span dir="ltr">@{CONTACT.instagram}</span>
                 </a>
               </li>
             </ul>
