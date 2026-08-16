@@ -266,7 +266,7 @@ export const GARDEN = {
         ckb: "پێش دەستپێکردن باخچەکەیان دیزاین کرد، بۆیە بە تەواوی زانیمان چەند دەدەین. لە یەکەم ڕۆژەوە تا کۆتایی هیچ لە نرخەکەدا نەگۆڕا.",
         en: "They designed it before they started, so we knew exactly what we were paying. Nothing about the price changed from the first day to the last.",
       },
-      author: { ar: "أحمد م. — المنصور", ckb: "ئەحمەد م. — مەنسوور", en: "Ahmed M. — Al-Mansour" },
+      author: { ar: "أحمد م. — بغداد", ckb: "ئەحمەد م. — بەغدا", en: "Ahmed M. — Baghdad" },
     },
     {
       quote: {
@@ -282,7 +282,7 @@ export const GARDEN = {
         ckb: "دوو جار دوای تەواوبوونی کارەکە گەڕانەوە بۆ دڵنیابوون لە ئاودێری و ڕووەکەکان. کەم کەس ئەوە دەکات.",
         en: "They came back twice after finishing, to check the irrigation and the planting. Not many people do that.",
       },
-      author: { ar: "مصطفى ع. — الجادرية", ckb: "موستەفا ع. — جادریە", en: "Mustafa A. — Al-Jadriya" },
+      author: { ar: "مصطفى ع. — بغداد", ckb: "موستەفا ع. — بەغدا", en: "Mustafa A. — Baghdad" },
     },
   ],
 
@@ -302,20 +302,19 @@ export const GARDEN = {
     },
     { day: { ar: "الجمعة", ckb: "هەینی", en: "Friday" }, time: { ar: "مغلق", ckb: "داخراو", en: "Closed" } },
   ],
-  officeTitle: { ar: "المكتب والمشتل", ckb: "نووسینگە و نەمامگە", en: "Office and nursery" },
-  /* PLACEHOLDER: the district is a stand-in until the real street address
-     arrives. It must match COMPANY.address in server/brand.ts. */
+  officeTitle: { ar: "مقرّنا", ckb: "بنکەمان", en: "Based in" },
+  /* The city and nothing finer, matching COMPANY.address in server/brand.ts.
+     There is no shop to walk into, so a street would only invite a visit that
+     cannot happen. */
   office: {
-    ar: "المنصور\nبغداد، العراق",
-    ckb: "مەنسوور\nبەغدا، عێراق",
-    en: "Al-Mansour\nBaghdad, Iraq",
+    ar: "بغداد، العراق",
+    ckb: "بەغدا، عێراق",
+    en: "Baghdad, Iraq",
   },
-  /* Said plainly, because a landscaping company's address on a website reads
-     like an invitation and this one is a working yard. */
   officeNote: {
-    ar: "مكان عمل وليس معرضًا — نحن نأتي إليك.",
-    ckb: "شوێنی کارە نەک پێشانگا — ئێمە دێینە لات.",
-    en: "A working yard, not a showroom — we come to you.",
+    ar: "لا يوجد معرض تزوره — نحن من يأتي إليك.",
+    ckb: "پێشانگایەک نییە سەردانی بکەیت — ئێمەین کە دێینە لات.",
+    en: "There's no showroom to visit — we come to you.",
   },
 
   /* Photographs. Every slot optional; empty ones render palette gradients.

@@ -129,9 +129,11 @@ export const COMPANY = {
   city: "Baghdad",
   /** Founded this year. The assistant must not imply a long track record. */
   established: 2026,
-  /** The yard and nursery. Clients are not received here — we go to them.
-   *  PLACEHOLDER: replace with the real street address. */
-  address: "Al-Mansour, Baghdad, Iraq",
+  /** The city, and deliberately nothing finer. There is no shop, showroom or
+   *  address for anyone to turn up at: the work is at the client's property
+   *  and the team travels to them, so a street would only invite a visit that
+   *  cannot happen. */
+  address: "Baghdad, Iraq",
   phone: "+964 782 782 9003",
   email: "greengarden632@gmail.com",
   /** Where the crews travel. Beyond it, ask — it is a question of travel time. */
@@ -164,7 +166,7 @@ export function brandBriefing(): string {
   return `Company: ${COMPANY.name}, a garden design and landscaping company in ${COMPANY.city}.
 Green Gardens designs, builds and maintains gardens and landscapes. It is NOT a venue, a restaurant, a park or anywhere the public visits. All work happens at the client's own property and the team travels to them.
 The company was established in ${COMPANY.established} and is new. Never claim years of trading, a long history, or hundreds of past projects. The people in it are experienced; the company is young, and you say so plainly if asked.
-Office and nursery, which is a working yard rather than somewhere to receive clients: ${COMPANY.address}
+Based in: ${COMPANY.address}. There is no shop, showroom or public address, and no street or district to give out — if a visitor asks where you are, the answer is Baghdad, and that the team comes to them.
 Areas served: ${COMPANY.coverage}
 Phone: ${COMPANY.phone} — Email: ${COMPANY.email}
 

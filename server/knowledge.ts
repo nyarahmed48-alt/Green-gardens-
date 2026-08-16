@@ -89,7 +89,7 @@ export function pageKnowledge(lang: Lang = "en"): string {
   parts.push("\n-- Office hours --");
   for (const entry of GARDEN.hours) parts.push(`${say(entry.day)} → ${say(entry.time)}`);
 
-  parts.push("\n-- The office and nursery (a working yard, NOT open to visitors) --");
+  parts.push("\n-- Where the company is based (no address, nowhere to visit) --");
   parts.push(say(GARDEN.office));
   parts.push(say(GARDEN.officeNote));
 
