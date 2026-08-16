@@ -9,10 +9,10 @@
  * Deliberately not a library. There are three languages and one dictionary, so
  * a context plus a lookup is the whole requirement.
  *
- * Arabic is the default because it is what most guests in Erbil read first.
- * Kurdish matters just as much here and is written in the Arabic script, so a
- * single `isRtl` flag covers the layout for either — English is the exception,
- * not Kurdish.
+ * Arabic is the default because it is what Baghdad reads first. Kurdish is
+ * kept because clients come from across Iraq, and it is written in the Arabic
+ * script too, so a single `isRtl` flag covers the layout for either — English
+ * is the exception, not Kurdish.
  *
  * A visitor's choice is remembered, so the switch only has to be pressed once.
  */

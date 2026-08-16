@@ -1,7 +1,8 @@
 # Green Gardens
 
 The website for Green Gardens — a garden design and landscaping company in
-Erbil. We design, build and maintain gardens for homes and company grounds,
+Baghdad, established 2026. We design, build and maintain gardens for homes and
+company grounds,
 and the crew travels to the client: **nobody visits us**, so every call to
 action on this site books a visit the other way round.
 
@@ -12,7 +13,7 @@ behind it:
   companies — with the site address and rough area — and emails them to the
   office.
 - **Green AI**, an assistant (built and run by CoreOs) that answers questions
-  about the services, the indicative rates and what survives an Erbil summer.
+  about the services, the indicative rates and what survives a Baghdad summer.
 
 ```bash
 npm install

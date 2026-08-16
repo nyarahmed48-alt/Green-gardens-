@@ -6,7 +6,7 @@
 /**
  * The footer. Address, hours and the two ways to reach a person.
  *
- * WhatsApp comes first among them because it is the channel a client in Erbil
+ * WhatsApp comes first among them because it is the channel a client in Iraq
  * will actually use, and it opens with the message half-written so nobody has
  * to think of an opening line.
  */

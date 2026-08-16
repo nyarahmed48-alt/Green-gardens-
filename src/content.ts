@@ -15,8 +15,9 @@
  * optional for the same reason: a missing Kurdish string is a type error, not
  * a silent fall back to English.
  *
- * Arabic is Modern Standard. The Kurdish is Sorani in the Arabic script, which
- * is what Erbil reads. Western numerals throughout — they are what regional
+ * Arabic is Modern Standard — the language Baghdad reads first, and the site
+ * default. The Kurdish is Sorani in the Arabic script, kept because clients
+ * come from across Iraq. Western numerals throughout: they are what regional
  * business writing uses and they keep prices legible in both directions.
  *
  * "Green Gardens" stays in Latin script in all three languages. It is the
@@ -50,9 +51,9 @@ export const GARDEN = {
   name: "Green Gardens",
 
   kicker: {
-    ar: "تصميم وتنفيذ الحدائق · أربيل",
-    ckb: "دیزاین و دروستکردنی باخچە · هەولێر",
-    en: "Garden design & landscaping · Erbil",
+    ar: "تصميم وتنفيذ الحدائق · بغداد",
+    ckb: "دیزاین و دروستکردنی باخچە · بەغدا",
+    en: "Garden design & landscaping · Baghdad",
   },
   tagline: {
     ar: "نصمّم حديقتك ونبنيها ونبقيها حيّة.",
@@ -60,9 +61,9 @@ export const GARDEN = {
     en: "We design your garden, build it, and keep it alive.",
   },
   intro: {
-    ar: "من الرسم الأول حتى آخر شجرة: تصميم، وتنفيذ كامل، وريّ، وصيانة. نعمل في بيوت أربيل وفي مواقع الشركات، ونأتي إليك — الزيارة الأولى مجانية وبلا التزام.",
-    ckb: "لە یەکەم نەخشەوە تا دوایین دار: دیزاین، جێبەجێکردنی تەواو، ئاودێری، و چاودێری. لە ماڵەکانی هەولێر و لە شوێنی کۆمپانیاکاندا کار دەکەین، و ئێمە دێینە لات — یەکەم سەردان بێبەرامبەرە و هیچ ئەرکێکت ناخاتە سەر.",
-    en: "From the first drawing to the last tree: design, full construction, irrigation and upkeep. We work on homes across Erbil and on company grounds — and we come to you. The first visit is free and commits you to nothing.",
+    ar: "من الرسم الأول حتى آخر شجرة: تصميم، وتنفيذ كامل، وريّ، وصيانة. نعمل في بيوت بغداد وفي مواقع الشركات، ونأتي إليك — الزيارة الأولى مجانية وبلا التزام.",
+    ckb: "لە یەکەم نەخشەوە تا دوایین دار: دیزاین، جێبەجێکردنی تەواو، ئاودێری، و چاودێری. لە ماڵەکانی بەغدا و لە شوێنی کۆمپانیاکاندا کار دەکەین، و ئێمە دێینە لات — یەکەم سەردان بێبەرامبەرە و هیچ ئەرکێکت ناخاتە سەر.",
+    en: "From the first drawing to the last tree: design, full construction, irrigation and upkeep. We work on homes across Baghdad and on company grounds — and we come to you. The first visit is free and commits you to nothing.",
   },
   ctaVisit: { ar: "احجز زيارة مجانية", ckb: "سەردانێکی بێبەرامبەر داوا بکە", en: "Book a free site visit" },
   ctaServices: { ar: "شاهد ما نقدّمه", ckb: "بزانە چی دەکەین", en: "See what we do" },
@@ -70,12 +71,12 @@ export const GARDEN = {
   /* ------------------------------------------------------------- figures */
   stats: [
     {
-      value: "260+",
-      label: { ar: "حديقة ومساحة نفّذناها", ckb: "باخچە و ڕووبەری تەواوکراو", en: "gardens and grounds completed" },
+      value: "2026",
+      label: { ar: "سنة التأسيس", ckb: "ساڵی دامەزراندن", en: "established" },
     },
     {
-      value: "2011",
-      label: { ar: "السنة التي بدأنا فيها", ckb: "ئەو ساڵەی دەستمان پێکرد", en: "the year we started" },
+      value: "5",
+      label: { ar: "خدمات، وفريق واحد", ckb: "خزمەتگوزاری، بە یەک تیم", en: "services, one team" },
     },
     {
       value: "3–5",
@@ -85,16 +86,19 @@ export const GARDEN = {
 
   /* --------------------------------------------------------------- story */
   storyTitle: { ar: "من نحن", ckb: "ئێمە کێین", en: "Who we are" },
+  /* The company is months old. The copy says so and leans on the people
+     rather than on a history it does not have — a new firm claiming decades
+     is the fastest way to lose a client who asks one follow-up question. */
   story: [
     {
-      ar: "بدأنا عام 2011 بمشتل صغير على طريق برمام وبثلاثة عمال. أول عمل لنا كان حديقة بيت واحدة، ولا نزال نعتني بها حتى اليوم.",
-      ckb: "لە 2011دا بە نەمامگەیەکی بچووک لەسەر ڕێگای پیرمام و سێ کرێکار دەستمان پێکرد. یەکەم کارمان باخچەی یەک ماڵ بوو، و تا ئەمڕۆش چاودێریی دەکەین.",
-      en: "We started in 2011 with a small nursery on the Pirmam road and three workers. Our first job was one house garden, and we still look after it today.",
+      ar: "تأسّست Green Gardens عام 2026، لكن مَن فيها ليسوا جددًا على هذا العمل. أمضى مؤسّسوها سنوات في تنفيذ الحدائق في بغداد قبل أن يبدأوا الشركة، وأول ما بنَوه كان المشتل الذي يأتي منه كل نبات نزرعه.",
+      ckb: "Green Gardens لە 2026دا دامەزرا، بەڵام ئەوانەی تێیدان لەم کارە نوێ نین. دامەزرێنەرانی ساڵانێک باخچەیان لە بەغدا دروست کردووە پێش ئەوەی کۆمپانیاکە دەست پێ بکات، و یەکەم شت کە دروستیان کرد ئەو نەمامگەیە بوو کە هەموو ڕووەکەکانمان لێوەی دێن.",
+      en: "Green Gardens was established in 2026, but the people in it are not new to this. Our founders spent years building gardens across Baghdad before starting the company, and the first thing they built was the nursery every plant we use comes from.",
     },
     {
-      ar: "نزرع ما يعيش هنا فعلًا. الصيف في أربيل يقتل النبات الجميل الذي لا يحتمل الحرارة، لذلك نختار من مشتلنا ما جرّبناه على أرضنا، ونصمّم الريّ قبل أن نصمّم الشكل.",
-      ckb: "ئەوە دەچێنین کە بەڕاستی لێرە دەژیێت. هاوینی هەولێر ئەو ڕووەکە جوانانە دەکوژێت کە بەرگەی گەرما ناگرن، بۆیە لە نەمامگەکەی خۆمانەوە ئەوە هەڵدەبژێرین کە لەسەر زەوی خۆمان تاقیمان کردووەتەوە، و پێش دیزاینی شێوە، ئاودێری دیزاین دەکەین.",
-      en: "We plant what actually lives here. An Erbil summer kills the beautiful things that can't take the heat, so we choose from our own nursery what we've tested in our own ground — and we design the irrigation before we design the look.",
+      ar: "نزرع ما يعيش هنا فعلًا. صيف بغداد يقتل النبات الجميل الذي لا يحتمل الحرارة، لذلك نختار من مشتلنا ما جرّبناه على أرضنا، ونصمّم الريّ قبل أن نصمّم الشكل.",
+      ckb: "ئەوە دەچێنین کە بەڕاستی لێرە دەژیێت. هاوینی بەغدا ئەو ڕووەکە جوانانە دەکوژێت کە بەرگەی گەرما ناگرن، بۆیە لە نەمامگەکەی خۆمانەوە ئەوە هەڵدەبژێرین کە لەسەر زەوی خۆمان تاقیمان کردووەتەوە، و پێش دیزاینی شێوە، ئاودێری دیزاین دەکەین.",
+      en: "We plant what actually lives here. A Baghdad summer kills the beautiful things that can't take the heat, so we choose from our own nursery what we've tested in our own ground — and we design the irrigation before we design the look.",
     },
   ],
 
@@ -129,9 +133,9 @@ export const GARDEN = {
       id: "planting",
       name: { ar: "الزراعة والنجيل", ckb: "چاندن و سەوزەڵە", en: "Planting and lawns" },
       body: {
-        ar: "أشجار وأحواض ونجيل وغطاء أرضي، مختارة لمناخ أربيل، مع تجهيز التربة ورعاية الموسم الأول.",
-        ckb: "دار، باخچەبەند، سەوزەڵە و ڕووپۆشی زەوی، هەڵبژێردراو بۆ کەشوهەوای هەولێر، لەگەڵ ئامادەکردنی خاک و چاودێریی وەرزی یەکەم.",
-        en: "Trees, beds, turf and ground cover chosen for the Erbil climate, with the soil prepared and the first season looked after.",
+        ar: "أشجار وأحواض ونجيل وغطاء أرضي، مختارة لمناخ بغداد، مع تجهيز التربة ورعاية الموسم الأول.",
+        ckb: "دار، باخچەبەند، سەوزەڵە و ڕووپۆشی زەوی، هەڵبژێردراو بۆ کەشوهەوای بەغدا، لەگەڵ ئامادەکردنی خاک و چاودێریی وەرزی یەکەم.",
+        en: "Trees, beds, turf and ground cover chosen for the Baghdad climate, with the soil prepared and the first season looked after.",
       },
     },
     {
@@ -243,13 +247,18 @@ export const GARDEN = {
   /* ------------------------------------------------------------- gallery */
   galleryTitle: { ar: "من أعمالنا", ckb: "لە کارەکانمان", en: "Our work" },
   galleryNote: {
-    ar: "حدائق بيوت ومواقع شركات في أربيل وما حولها.",
-    ckb: "باخچەی ماڵان و شوێنی کۆمپانیاکان لە هەولێر و دەوروبەری.",
-    en: "House gardens and company grounds in and around Erbil.",
+    ar: "حدائق بيوت ومواقع شركات في بغداد وما حولها.",
+    ckb: "باخچەی ماڵان و شوێنی کۆمپانیاکان لە بەغدا و دەوروبەری.",
+    en: "House gardens and company grounds in and around Baghdad.",
   },
 
   /* ------------------------------------------------------------- reviews */
   reviewsTitle: { ar: "ماذا قال أصحاب الحدائق", ckb: "خاوەنی باخچەکان چییان وت", en: "What our clients say" },
+  /* PLACEHOLDER QUOTES — invented, and written so that nothing in them claims
+     more history than a company founded this year has. Replace every one with
+     a real client's words before this section earns its place; testimonials
+     nobody said are the one thing on a site that can cost you a client's
+     trust outright. Delete the section rather than ship it empty. */
   reviews: [
     {
       quote: {
@@ -257,7 +266,7 @@ export const GARDEN = {
         ckb: "پێش دەستپێکردن باخچەکەیان دیزاین کرد، بۆیە بە تەواوی زانیمان چەند دەدەین. لە یەکەم ڕۆژەوە تا کۆتایی هیچ لە نرخەکەدا نەگۆڕا.",
         en: "They designed it before they started, so we knew exactly what we were paying. Nothing about the price changed from the first day to the last.",
       },
-      author: { ar: "دلَير م. — عنكاوا", ckb: "دلێر م. — عەنکاوە", en: "Dler M. — Ainkawa" },
+      author: { ar: "أحمد م. — المنصور", ckb: "ئەحمەد م. — مەنسوور", en: "Ahmed M. — Al-Mansour" },
     },
     {
       quote: {
@@ -265,15 +274,15 @@ export const GARDEN = {
         ckb: "بەردەمی هوتێلەکەیان بە قۆناغ جێبەجێ کرد بۆ ئەوەی دەرگاکانمان دانەخەین. لە هەفتەی کۆتاییدا بە شەو کاریان کرد.",
         en: "They did the hotel forecourt in phases so we never had to close. In the last week they worked nights.",
       },
-      author: { ar: "ريڤين ح. — مدير عام", ckb: "ڕێڤین ح. — بەڕێوەبەری گشتی", en: "Revin H. — general manager" },
+      author: { ar: "زينب ح. — مديرة عامة", ckb: "زەینەب ح. — بەڕێوەبەری گشتی", en: "Zainab H. — general manager" },
     },
     {
       quote: {
-        ar: "مرّ صيفان والنجيل ما زال حيًّا. هذا وحده يقول كل شيء عن الريّ الذي ركّبوه.",
-        ckb: "دوو هاوین تێپەڕی و سەوزەڵەکە هێشتا زیندووە. تەنها ئەوە هەموو شتێک دەڵێت دەربارەی ئەو ئاودێرییەی دایانناوە.",
-        en: "Two summers on and the lawn is still alive. That alone says everything about the irrigation they put in.",
+        ar: "رجعوا مرّتين بعد التسليم ليطمئنّوا على الريّ والنبات. قليل من يفعل ذلك.",
+        ckb: "دوو جار دوای تەواوبوونی کارەکە گەڕانەوە بۆ دڵنیابوون لە ئاودێری و ڕووەکەکان. کەم کەس ئەوە دەکات.",
+        en: "They came back twice after finishing, to check the irrigation and the planting. Not many people do that.",
       },
-      author: { ar: "سارة ع. — دريم سيتي", ckb: "سارا ع. — دریم سیتی", en: "Sara A. — Dream City" },
+      author: { ar: "مصطفى ع. — الجادرية", ckb: "موستەفا ع. — جادریە", en: "Mustafa A. — Al-Jadriya" },
     },
   ],
 
@@ -281,9 +290,9 @@ export const GARDEN = {
   reachTitle: { ar: "أين نعمل", ckb: "لە کوێ کار دەکەین", en: "Where we work" },
   coverageTitle: { ar: "مناطق العمل", ckb: "ناوچەکانی کارکردن", en: "Areas we cover" },
   coverage: {
-    ar: "أربيل والمناطق المحيطة بها.\nخارجها في إقليم كردستان بالاتفاق.",
-    ckb: "هەولێر و ناوچەکانی دەوروبەری.\nدەرەوەی ئەوە لە هەرێمی کوردستان بە ڕێککەوتن.",
-    en: "Erbil and the surrounding districts.\nElsewhere in the Kurdistan Region by arrangement.",
+    ar: "بغداد والمناطق المحيطة بها.\nخارجها داخل العراق بالاتفاق.",
+    ckb: "بەغدا و ناوچەکانی دەوروبەری.\nدەرەوەی ئەوە لە ناو عێراق بە ڕێککەوتن.",
+    en: "Baghdad and the surrounding districts.\nElsewhere in Iraq by arrangement.",
   },
   hoursTitle: { ar: "أوقات المكتب", ckb: "کاتی نووسینگە", en: "Office hours" },
   hours: [
@@ -294,10 +303,12 @@ export const GARDEN = {
     { day: { ar: "الجمعة", ckb: "هەینی", en: "Friday" }, time: { ar: "مغلق", ckb: "داخراو", en: "Closed" } },
   ],
   officeTitle: { ar: "المكتب والمشتل", ckb: "نووسینگە و نەمامگە", en: "Office and nursery" },
+  /* PLACEHOLDER: the district is a stand-in until the real street address
+     arrives. It must match COMPANY.address in server/brand.ts. */
   office: {
-    ar: "طريق برمام، كيلومتر 6\nأربيل، إقليم كردستان",
-    ckb: "ڕێگای پیرمام، کیلۆمەتر 6\nهەولێر، هەرێمی کوردستان",
-    en: "Pirmam Road, Kilometre 6\nErbil, Kurdistan Region",
+    ar: "المنصور\nبغداد، العراق",
+    ckb: "مەنسوور\nبەغدا، عێراق",
+    en: "Al-Mansour\nBaghdad, Iraq",
   },
   /* Said plainly, because a landscaping company's address on a website reads
      like an invitation and this one is a working yard. */
@@ -321,7 +332,7 @@ export const GARDEN = {
  *
  * The number is digits only, country code included, because that is the form
  * wa.me takes. WhatsApp is first everywhere it appears: it is the channel a
- * client in Erbil will actually use.
+ * client in Iraq will actually use.
  */
 export const CONTACT = {
   phoneDisplay: "+964 782 782 9003",
@@ -350,9 +361,9 @@ export const NAV = {
 
 export const FOOTER = {
   blurb: {
-    ar: "شركة تصميم وتنفيذ حدائق في أربيل. نصمّم وننفّذ ونصون حدائق البيوت ومواقع الشركات — ونأتي إليك.",
-    ckb: "کۆمپانیایەکی دیزاین و دروستکردنی باخچەیە لە هەولێر. باخچەی ماڵان و شوێنی کۆمپانیاکان دیزاین و دروست و چاودێری دەکەین — و ئێمە دێینە لات.",
-    en: "A garden design and landscaping company in Erbil. We design, build and maintain house gardens and company grounds — and we come to you.",
+    ar: "شركة تصميم وتنفيذ حدائق في بغداد، تأسّست عام 2026. نصمّم وننفّذ ونصون حدائق البيوت ومواقع الشركات — ونأتي إليك.",
+    ckb: "کۆمپانیایەکی دیزاین و دروستکردنی باخچەیە لە بەغدا، لە 2026دا دامەزراوە. باخچەی ماڵان و شوێنی کۆمپانیاکان دیزاین و دروست و چاودێری دەکەین — و ئێمە دێینە لات.",
+    en: "A garden design and landscaping company in Baghdad, established 2026. We design, build and maintain house gardens and company grounds — and we come to you.",
   },
   contactTitle: { ar: "تواصل معنا", ckb: "پەیوەندیمان پێوە بکە", en: "Get in touch" },
   whatsapp: { ar: "راسلنا على واتساب", ckb: "لە واتساپ نامەمان بۆ بنێرە", en: "Message us on WhatsApp" },
@@ -480,16 +491,16 @@ export const CHAT = {
     en: "Ask about services, rates or plants…",
   },
   greeting: {
-    ar: "أهلًا. أستطيع أن أشرح ما نقدّمه، والأسعار التقريبية، وما ينجح في مناخ أربيل. لحجز زيارة مجانية، النموذج في الأسفل يصل مباشرة إلى المكتب.",
-    ckb: "سڵاو. دەتوانم ڕوون بکەمەوە چی دەکەین، نرخە نزیکەییەکان، و چی لە کەشوهەوای هەولێردا سەرکەوتوو دەبێت. بۆ سەردانێکی بێبەرامبەر، فۆرمەکەی خوارەوە ڕاستەوخۆ دەگاتە نووسینگە.",
-    en: "Hello. I can explain what we do, what things roughly cost, and what survives an Erbil summer. To book a free visit, the form below goes straight to the office.",
+    ar: "أهلًا. أستطيع أن أشرح ما نقدّمه، والأسعار التقريبية، وما ينجح في مناخ بغداد. لحجز زيارة مجانية، النموذج في الأسفل يصل مباشرة إلى المكتب.",
+    ckb: "سڵاو. دەتوانم ڕوون بکەمەوە چی دەکەین، نرخە نزیکەییەکان، و چی لە کەشوهەوای بەغدادا سەرکەوتوو دەبێت. بۆ سەردانێکی بێبەرامبەر، فۆرمەکەی خوارەوە ڕاستەوخۆ دەگاتە نووسینگە.",
+    en: "Hello. I can explain what we do, what things roughly cost, and what survives a Baghdad summer. To book a free visit, the form below goes straight to the office.",
   },
   /* Openers, so a visitor who does not know what to ask still gets a useful
      first answer rather than an empty box. */
   prompts: [
     { ar: "كم تكلفة حديقة 200 متر؟", ckb: "باخچەیەکی 200 مەتری چەندی تێدەچێت؟", en: "What would a 200 m² garden cost?" },
-    { ar: "ما النباتات التي تتحمّل صيف أربيل؟", ckb: "چ ڕووەکێک بەرگەی هاوینی هەولێر دەگرێت؟", en: "What survives an Erbil summer?" },
-    { ar: "هل تعملون خارج أربيل؟", ckb: "لە دەرەوەی هەولێر کار دەکەن؟", en: "Do you work outside Erbil?" },
+    { ar: "ما النباتات التي تتحمّل صيف بغداد؟", ckb: "چ ڕووەکێک بەرگەی هاوینی بەغدا دەگرێت؟", en: "What survives a Baghdad summer?" },
+    { ar: "هل تعملون خارج بغداد؟", ckb: "لە دەرەوەی بەغدا کار دەکەن؟", en: "Do you work outside Baghdad?" },
   ],
   note: {
     ar: "مساعِد ذكي. الأسعار تقريبية — السعر النهائي بعد زيارة الموقع.",

@@ -39,7 +39,7 @@ export const SERVICES = [
   {
     id: "planting",
     name: "Planting and lawns",
-    note: "Trees, beds, turf and ground cover, chosen for the Erbil climate.",
+    note: "Trees, beds, turf and ground cover, chosen for the Baghdad climate.",
   },
   {
     id: "irrigation",
@@ -126,14 +126,16 @@ export const RATES = [
 
 export const COMPANY = {
   name: "Green Gardens",
-  city: "Erbil",
-  /** The yard and nursery. Clients are not received here — we go to them. */
-  address: "Pirmam Road, Kilometre 6, Erbil, Kurdistan Region, Iraq",
+  city: "Baghdad",
+  /** Founded this year. The assistant must not imply a long track record. */
+  established: 2026,
+  /** The yard and nursery. Clients are not received here — we go to them.
+   *  PLACEHOLDER: replace with the real street address. */
+  address: "Al-Mansour, Baghdad, Iraq",
   phone: "+964 782 782 9003",
   email: "greengarden632@gmail.com",
   /** Where the crews travel. Beyond it, ask — it is a question of travel time. */
-  coverage:
-    "Erbil and the surrounding districts, and elsewhere in the Kurdistan Region by arrangement",
+  coverage: "Baghdad and the surrounding districts, and elsewhere in Iraq by arrangement",
   hours: [
     { days: "Saturday – Thursday", time: "08:00 – 17:00" },
     { days: "Friday", time: "closed" },
@@ -161,6 +163,7 @@ export function brandBriefing(): string {
 
   return `Company: ${COMPANY.name}, a garden design and landscaping company in ${COMPANY.city}.
 Green Gardens designs, builds and maintains gardens and landscapes. It is NOT a venue, a restaurant, a park or anywhere the public visits. All work happens at the client's own property and the team travels to them.
+The company was established in ${COMPANY.established} and is new. Never claim years of trading, a long history, or hundreds of past projects. The people in it are experienced; the company is young, and you say so plainly if asked.
 Office and nursery, which is a working yard rather than somewhere to receive clients: ${COMPANY.address}
 Areas served: ${COMPANY.coverage}
 Phone: ${COMPANY.phone} — Email: ${COMPANY.email}
