@@ -6,11 +6,12 @@
 /**
  * Green Gardens — the page.
  *
- * A landscaping company sells on two things: proof that the last garden
- * worked, and confidence that the price will not move once the digging
- * starts. So the page runs proof (work, clients) into process (how it works,
- * what it costs) and ends at the one action worth taking — booking the free
- * site visit that produces a real quotation.
+ * A landscaping company sells on two things: proof that the work is good, and
+ * confidence that the price will not move once the digging starts. A company
+ * founded this year is short on the first, so the page leans on the second —
+ * what we do, how a job runs, what it costs, what we promise — and ends at the
+ * one action worth taking: booking the free site visit that produces a real
+ * quotation.
  *
  * Nothing here invites anyone to visit us. The crew travels to the client, and
  * every call to action books that direction.
@@ -23,7 +24,7 @@
  * interactive pieces are their own files.
  */
 
-import { CalendarCheck, Clock, Leaf, MapPin, Quote, Sprout } from "lucide-react";
+import { CalendarCheck, Check, Clock, Leaf, MapPin, Sprout } from "lucide-react";
 import { ConciergeChat } from "./ConciergeChat";
 import { ReservationForm } from "./ReservationForm";
 import { Footer } from "./components/Footer";
@@ -241,28 +242,37 @@ export default function App() {
         </div>
       </Section>
 
-      {/* ------------------------------------------------------------ Reviews */}
+      {/* ---------------------------------------------------------- Standards
+
+          Where testimonials would sit on an older company's site. A firm
+          founded this year has no clients to quote yet, and inventing them is
+          not an option, so this says how the work runs instead — which is the
+          thing a cautious client is actually trying to find out. */}
       <Section className={HAIRLINE}>
         <h2 className="font-display text-[28px] font-bold" style={{ color: GG.cream }}>
-          {t(GARDEN.reviewsTitle)}
+          {t(GARDEN.standardsTitle)}
         </h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {GARDEN.reviews.map((review) => (
-            <figure
-              key={review.author.en}
+        <p className="mt-2 max-w-2xl text-[14.5px] leading-relaxed" style={{ color: GG.faint }}>
+          {t(GARDEN.standardsNote)}
+        </p>
+
+        <ul className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {GARDEN.standards.map((item) => (
+            <li
+              key={item.id}
               className="rounded-2xl p-5"
               style={{ background: GG.panel, border: `1px solid ${GG.line}` }}
             >
-              <Quote className="h-5 w-5" style={{ color: GG.leaf }} />
-              <blockquote className="mt-3 text-[14.5px] leading-relaxed" style={{ color: GG.cream }}>
-                {t(review.quote)}
-              </blockquote>
-              <figcaption className="mt-3 text-[13px] font-semibold" style={{ color: GG.faint }}>
-                {t(review.author)}
-              </figcaption>
-            </figure>
+              <Check className="h-4 w-4 shrink-0" style={{ color: GG.leaf }} />
+              <h3 className="mt-3 font-display text-[16px] font-bold" style={{ color: GG.cream }}>
+                {t(item.name)}
+              </h3>
+              <p className="mt-2 text-[14px] leading-relaxed" style={{ color: GG.muted }}>
+                {t(item.body)}
+              </p>
+            </li>
           ))}
-        </div>
+        </ul>
       </Section>
 
       {/* --------------------------------------------------------- Site visit */}

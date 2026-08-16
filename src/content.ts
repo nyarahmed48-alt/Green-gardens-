@@ -252,37 +252,81 @@ export const GARDEN = {
     en: "House gardens and company grounds in and around Baghdad.",
   },
 
-  /* ------------------------------------------------------------- reviews */
-  reviewsTitle: { ar: "ماذا قال أصحاب الحدائق", ckb: "خاوەنی باخچەکان چییان وت", en: "What our clients say" },
-  /* PLACEHOLDER QUOTES — invented, and written so that nothing in them claims
-     more history than a company founded this year has. Replace every one with
-     a real client's words before this section earns its place; testimonials
-     nobody said are the one thing on a site that can cost you a client's
-     trust outright. Delete the section rather than ship it empty. */
-  reviews: [
+  /* ----------------------------------------------------------- standards
+
+     This replaces a testimonials section. The company was founded this year,
+     so quotes from clients would have to be invented — and an invented quote
+     is the one thing on a site that can cost real trust when a reader checks.
+     What a new firm CAN prove is how it runs a job, so that is what stands
+     here: the promises, stated plainly enough to be held to. */
+  standardsTitle: {
+    ar: "ما يمكنك الاعتماد عليه",
+    ckb: "ئەوەی دەتوانیت پشتی پێببەستیت",
+    en: "What you can count on",
+  },
+  standardsNote: {
+    ar: "نحن شركة جديدة، فبدل أن ننقل لك كلام أشخاص لا تعرفهم، إليك بالضبط كيف نعمل.",
+    ckb: "ئێمە کۆمپانیایەکی نوێین، بۆیە لەبری گێڕانەوەی قسەی کەسانێک کە نایانناسیت، ئەوەتا بە تەواوی چۆن کار دەکەین.",
+    en: "We're new, so instead of quoting clients you've never met, here is exactly how we work.",
+  },
+  standards: [
     {
-      quote: {
-        ar: "صمّموا الحديقة قبل أن يبدأوا، فعرفنا بالضبط ما سندفع. لا شيء تغيّر في السعر من أول يوم إلى آخره.",
-        ckb: "پێش دەستپێکردن باخچەکەیان دیزاین کرد، بۆیە بە تەواوی زانیمان چەند دەدەین. لە یەکەم ڕۆژەوە تا کۆتایی هیچ لە نرخەکەدا نەگۆڕا.",
-        en: "They designed it before they started, so we knew exactly what we were paying. Nothing about the price changed from the first day to the last.",
+      id: "price",
+      name: { ar: "سعر لا يتغيّر", ckb: "نرخێک کە ناگۆڕێت", en: "A price that doesn't move" },
+      body: {
+        ar: "عرض السعر يُثبَّت قبل بدء العمل. وإن لزم تغيير شيء، يُتَّفق عليه ويُسعَّر كتابيًا قبل أن يلمسه أحد.",
+        ckb: "نرخەکە پێش دەستپێکردنی کار جێگیر دەکرێت. ئەگەر پێویست بوو شتێک بگۆڕدرێت، پێش ئەوەی کەس دەستی لێ بدات بە نووسراوی ڕێککەوتنی لەسەر دەکرێت و نرخ دەکرێت.",
+        en: "The quotation is fixed before work starts. If something has to change, it is agreed and priced in writing before anyone touches it.",
       },
-      author: { ar: "أحمد م. — بغداد", ckb: "ئەحمەد م. — بەغدا", en: "Ahmed M. — Baghdad" },
     },
     {
-      quote: {
-        ar: "نفّذوا الساحة الأمامية للفندق على مراحل حتى لا نغلق أبوابنا. عملوا ليلًا في الأسبوع الأخير.",
-        ckb: "بەردەمی هوتێلەکەیان بە قۆناغ جێبەجێ کرد بۆ ئەوەی دەرگاکانمان دانەخەین. لە هەفتەی کۆتاییدا بە شەو کاریان کرد.",
-        en: "They did the hotel forecourt in phases so we never had to close. In the last week they worked nights.",
+      id: "owner",
+      name: { ar: "شخص واحد مسؤول", ckb: "یەک کەس بەرپرسە", en: "One person answerable" },
+      body: {
+        ar: "مشرف باسمه على موقعك ورقم واحد تتصل به. لن تلاحق مقاولًا نحن من أحضره.",
+        ckb: "سەرپەرشتیارێکی دیاریکراو لەسەر کارەکەت و یەک ژمارە کە پەیوەندی پێوە دەکەیت. هەرگیز دوای ئەو کەسە ناکەویت کە ئێمە هێناومانە.",
+        en: "A named supervisor on your job and one number to call. You never chase a subcontractor we brought in.",
       },
-      author: { ar: "زينب ح. — مديرة عامة", ckb: "زەینەب ح. — بەڕێوەبەری گشتی", en: "Zainab H. — general manager" },
     },
     {
-      quote: {
-        ar: "رجعوا مرّتين بعد التسليم ليطمئنّوا على الريّ والنبات. قليل من يفعل ذلك.",
-        ckb: "دوو جار دوای تەواوبوونی کارەکە گەڕانەوە بۆ دڵنیابوون لە ئاودێری و ڕووەکەکان. کەم کەس ئەوە دەکات.",
-        en: "They came back twice after finishing, to check the irrigation and the planting. Not many people do that.",
+      id: "dates",
+      name: { ar: "مواعيد قبل أن نبدأ", ckb: "بەروار پێش دەستپێکردن", en: "Dates before we start" },
+      body: {
+        ar: "تاريخ بدء وتاريخ انتهاء مكتوبان — وإن أخّرهما الطقس أو تأخّرت مواد، تسمع ذلك منّا في اليوم نفسه لا بعد أسبوع.",
+        ckb: "بەرواری دەستپێک و کۆتایی بە نووسراوی — و ئەگەر کەشوهەوا یان دواکەوتنی کەلوپەل گۆڕی، هەمان ڕۆژ لە ئێمەوە دەیبیستیت نەک دوای هەفتەیەک.",
+        en: "A start date and a finish date in writing — and if weather or a delivery moves them, you hear it from us that day, not a week later.",
       },
-      author: { ar: "مصطفى ع. — بغداد", ckb: "موستەفا ع. — بەغدا", en: "Mustafa A. — Baghdad" },
+    },
+    {
+      id: "capacity",
+      name: {
+        ar: "عدد محدود من المشاريع معًا",
+        ckb: "ژمارەیەکی سنووردار لە پڕۆژە پێکەوە",
+        en: "A limited number of builds at once",
+      },
+      body: {
+        ar: "لا نبدأ إلا ما تستطيع فرقنا إنهاءه. لن تبقى حديقتك نصف محفورة بينما نعمل في موقع آخر.",
+        ckb: "تەنها ئەوە دەست پێدەکەین کە تیمەکانی خۆمان دەتوانن تەواوی بکەن. باخچەکەت بە نیوە هەڵکەندراوی نامێنێتەوە لە کاتێکدا لە شوێنێکی تردا کار دەکەین.",
+        en: "We only start what our own crews can finish. Your garden doesn't sit half-dug while we work somewhere else.",
+      },
+    },
+    {
+      id: "clean",
+      name: { ar: "موقع نظيف كل مساء", ckb: "شوێنێکی پاک هەموو ئێوارەیەک", en: "A clean site every evening" },
+      body: {
+        ar: "الأدوات تُرفع، والأنقاض تُزال أولًا بأول، ويبقى المدخل والباب صالحين للاستخدام طوال فترة العمل.",
+        ckb: "ئامرازەکان کۆدەکرێنەوە، خاشاک بەردەوام لادەبرێت، و ڕێگا و دەرگا بە درێژایی کارەکە بەکارهێنراو دەمێننەوە.",
+        en: "Tools away, rubble cleared as we go, and the drive and the door kept usable the whole time we're there.",
+      },
+    },
+    {
+      id: "aftercare",
+      name: { ar: "نعود بعد التسليم", ckb: "دوای تەواوکردن دەگەڕێینەوە", en: "We come back after we finish" },
+      body: {
+        ar: "شرح عملي لنظام الريّ، وزيارات متابعة خلال الموسم الأول حتى تثبت الزراعة وتستقرّ.",
+        ckb: "ڕوونکردنەوەی کردەیی بۆ سیستەمی ئاودێری، و سەردانی بەدواداچوون بە درێژایی وەرزی یەکەم تا چاندنەکە جێگیر دەبێت.",
+        en: "A walkthrough of the irrigation, and return visits through the first season while the planting takes.",
+      },
     },
   ],
 

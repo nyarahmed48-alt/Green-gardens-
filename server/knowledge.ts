@@ -93,9 +93,10 @@ export function pageKnowledge(lang: Lang = "en"): string {
   parts.push(say(GARDEN.office));
   parts.push(say(GARDEN.officeNote));
 
-  parts.push("\n-- What clients have said (published on the page) --");
-  for (const review of GARDEN.reviews) {
-    parts.push(`${say(review.author)}: ${say(review.quote)}`);
+  parts.push("\n-- What the company promises on the page, and is held to --");
+  parts.push(say(GARDEN.standardsNote));
+  for (const item of GARDEN.standards) {
+    parts.push(`${say(item.name)} — ${say(item.body)}`);
   }
 
   parts.push("\n-- What the site visit form asks for --");
