@@ -47,7 +47,6 @@ interface FormState {
   service: string;
   project: string;
   date: string;
-  time: string;
   notes: string;
   company: string;
   companyRole: string;
@@ -65,10 +64,6 @@ const EMPTY: FormState = {
   service: "design",
   project: "villa-garden",
   date: "",
-  /* Mid-morning: the crew is out by then and the light is good for judging a
-     plot. A client can change it, but an empty time field is one more thing
-     to fill in for no reason. */
-  time: "10:00",
   notes: "",
   company: "",
   companyRole: "",
@@ -357,8 +352,13 @@ export function ReservationForm() {
 
         <div className="hidden sm:block" aria-hidden="true" />
 
+        {/* A day, not an hour. A client cannot know which hour suits a crew
+            already booked across the city, so asking for one only produces a
+            guess the office has to undo on the phone. */}
         <div>
-          <Label htmlFor={field("date").id}>{c(FORM.date)}</Label>
+          <Label htmlFor={field("date").id} hint={c(FORM.dateHint)}>
+            {c(FORM.date)}
+          </Label>
           <input
             id={field("date").id}
             type="date"
@@ -372,22 +372,6 @@ export function ReservationForm() {
             dir="ltr"
           />
           <FieldError id={field("date").errorId} message={errors.date} />
-        </div>
-
-        <div>
-          <Label htmlFor={field("time").id}>{c(FORM.time)}</Label>
-          <input
-            id={field("time").id}
-            type="time"
-            required
-            value={form.time}
-            onChange={(e) => set("time")(e.target.value)}
-            aria-invalid={field("time").invalid}
-            aria-describedby={errors.time ? field("time").errorId : undefined}
-            className="gg-field"
-            dir="ltr"
-          />
-          <FieldError id={field("time").errorId} message={errors.time} />
         </div>
       </div>
 

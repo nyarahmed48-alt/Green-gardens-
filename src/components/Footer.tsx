@@ -12,7 +12,7 @@
  */
 
 import { Mail, MessageCircle, Phone } from "lucide-react";
-import { CONTACT, FOOTER, GARDEN, whatsapp } from "../content";
+import { CONTACT, COREOS_URL, FOOTER, GARDEN, whatsapp } from "../content";
 import { useLang } from "../i18n";
 import { GG } from "../theme";
 
@@ -36,11 +36,11 @@ export function Footer() {
             <p className="mt-3 max-w-md text-[14.5px] leading-relaxed" style={{ color: GG.muted }}>
               {t(FOOTER.blurb)}
             </p>
-            <p className="mt-5 whitespace-pre-line text-[14px] leading-relaxed" style={{ color: GG.faint }}>
+            {/* Just the city. The "Based in" section immediately above already
+                carries the "no showroom" line, and on a phone the two land in
+                the same screenful — saying it twice reads as a stutter. */}
+            <p className="mt-5 text-[14px]" style={{ color: GG.faint }}>
               {t(GARDEN.office)}
-            </p>
-            <p className="mt-1.5 text-[13px]" style={{ color: GG.faint }}>
-              {t(GARDEN.officeNote)}
             </p>
           </div>
 
@@ -85,13 +85,32 @@ export function Footer() {
           </div>
         </div>
 
-        <p className="mt-12 border-t pt-6 text-[12.5px]" style={{ borderColor: GG.line, color: GG.faint }}>
-          <span dir="ltr">
-            © {new Date().getFullYear()} {GARDEN.name}
-          </span>
-          {" — "}
-          {t(FOOTER.rights)}
-        </p>
+        <div className="mt-12 border-t pt-6" style={{ borderColor: GG.line }}>
+          <p className="text-[12.5px]" style={{ color: GG.faint }}>
+            <span dir="ltr">
+              © {new Date().getFullYear()} {GARDEN.name}
+            </span>
+            {" — "}
+            {t(FOOTER.established)}
+            {" — "}
+            {t(FOOTER.rights)}
+          </p>
+
+          {/* Who built it, and a way through to them. */}
+          <p className="mt-2 text-[12.5px] leading-relaxed" style={{ color: GG.faint }}>
+            {t(FOOTER.builtBy)}{" "}
+            <a
+              href={COREOS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              dir="ltr"
+              className="font-semibold underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-80"
+              style={{ color: GG.leaf }}
+            >
+              coreosai.netlify.app
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

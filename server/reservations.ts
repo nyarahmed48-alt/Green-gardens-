@@ -13,6 +13,11 @@
  * site is, and roughly how big it is. Without an address there is no visit to
  * make, which is why it is required of everyone.
  *
+ * A DAY is asked for, never an hour. The client has no way of knowing which
+ * hour suits a crew already booked across the city, so picking one is a guess
+ * that the office then has to undo on the phone. Ask for the day, agree the
+ * time when you call.
+ *
  * A request can come from a private client or from a company, and the two are
  * genuinely different jobs rather than one form with a checkbox: a company
  * needs an invoice address, a registration number and often a purchase order,
@@ -61,9 +66,9 @@ export interface Reservation {
   name: string;
   email: string;
   phone: string;
-  /** Preferred date and time for the visit. */
+  /** Preferred day for the visit. The office fixes the hour when it calls —
+   *  a client cannot know which hour suits a crew that is already booked. */
   date: string;
-  time: string;
   /** Where the garden is. The whole point of the request. */
   siteAddress: string;
   /** Rough size in square metres. Clients estimate; the visit measures. */
@@ -97,7 +102,6 @@ const looksLikeEmail = (value: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}
 const looksLikePhone = (value: string): boolean => (value.match(/\d/g) ?? []).length >= 7;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const TIME = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 /** Midnight UTC for a YYYY-MM-DD string, or NaN. Compared against today the
  *  same way, so "today" is never rejected because of the hour it is now. */
@@ -174,15 +178,6 @@ export function validate(raw: any, lang: Lang, now: Date): Validation {
       ar: "هذا التاريخ بعيد جدًا. راسلنا مباشرة لموعد أبعد من ذلك.",
       ckb: "ئەم بەروارە زۆر دوورە. بۆ کاتێکی دوورتر ڕاستەوخۆ پەیوەندیمان پێوە بکە.",
       en: "That is further out than the diary goes. Contact us directly for a date that far ahead.",
-    });
-  }
-
-  const time = text(raw?.time, 5);
-  if (!TIME.test(time)) {
-    errors.time = say({
-      ar: "اختر وقتًا.",
-      ckb: "کاتێک هەڵبژێرە.",
-      en: "Pick a time.",
     });
   }
 
@@ -265,7 +260,6 @@ export function validate(raw: any, lang: Lang, now: Date): Validation {
       email,
       phone,
       date,
-      time,
       siteAddress,
       areaM2,
       service,
@@ -330,7 +324,7 @@ function officeRows(r: Reservation): Row[] {
     { label: "Service wanted", value: serviceName(r.service) },
     { label: "Site type", value: projectName(r.audience, r.project) },
     { label: "Approx. area", value: `${r.areaM2.toLocaleString("en-US")} m²` },
-    { label: "Visit requested", value: `${r.date} at ${r.time}` },
+    { label: "Visit requested", value: r.date },
     { label: "Name", value: r.name },
     { label: "Email", value: r.email },
     { label: "Phone", value: r.phone },
@@ -402,7 +396,7 @@ const plain = (title: string, intro: string, rows: Row[], footer: string): strin
 export function officeEmail(r: Reservation, settings: MailSettings): OutgoingMail {
   const rows = officeRows(r);
   const kind = r.audience === "business" ? "Business" : "Private";
-  const title = `Site visit requested — ${r.date} at ${r.time}`;
+  const title = `Site visit requested — ${r.date}`;
   const intro = `${r.name} has asked for a visit to ${r.siteAddress}, for ${serviceName(r.service).toLowerCase()} on roughly ${r.areaM2.toLocaleString("en-US")} m². Confirm the appointment with them directly; this message is the only record.`;
   const footer = `Sent by the ${COMPANY.name} website. Reply to this message to answer the client.`;
 
@@ -412,7 +406,7 @@ export function officeEmail(r: Reservation, settings: MailSettings): OutgoingMai
     bcc: settings.bcc,
     // So hitting reply in the office mailbox writes to the client, not itself.
     replyTo: r.email,
-    subject: `[${r.reference}] ${kind} site visit — ${r.date} ${r.time} — ${serviceName(r.service)}`,
+    subject: `[${r.reference}] ${kind} site visit — ${r.date} — ${serviceName(r.service)}`,
     text: plain(title, intro, rows, footer),
     html: shell(title, intro, rows, footer, "ltr"),
   };
@@ -441,7 +435,7 @@ export function clientEmail(r: Reservation, settings: MailSettings): OutgoingMai
     { label: label({ ar: "الخدمة", ckb: "خزمەتگوزاری", en: "Service" }), value: serviceName(r.service) },
     { label: label({ ar: "نوع الموقع", ckb: "جۆری شوێن", en: "Site type" }), value: projectName(r.audience, r.project) },
     { label: label({ ar: "المساحة التقريبية", ckb: "ڕووبەری نزیکەیی", en: "Approx. area" }), value: `${r.areaM2.toLocaleString("en-US")} m²` },
-    { label: label({ ar: "موعد الزيارة المطلوب", ckb: "کاتی داواکراوی سەردان", en: "Visit requested" }), value: `${r.date} — ${r.time}` },
+    { label: label({ ar: "اليوم المطلوب", ckb: "ڕۆژی داواکراو", en: "Day requested" }), value: r.date },
   ];
   if (r.audience === "business" && r.company) {
     rows.push({ label: label({ ar: "الشركة", ckb: "کۆمپانیا", en: "Company" }), value: r.company });

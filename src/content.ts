@@ -411,7 +411,19 @@ export const FOOTER = {
   contactTitle: { ar: "تواصل معنا", ckb: "پەیوەندیمان پێوە بکە", en: "Get in touch" },
   whatsapp: { ar: "راسلنا على واتساب", ckb: "لە واتساپ نامەمان بۆ بنێرە", en: "Message us on WhatsApp" },
   rights: { ar: "جميع الحقوق محفوظة.", ckb: "هەموو مافەکان پارێزراون.", en: "All rights reserved." },
+  established: { ar: "تأسّست 2026", ckb: "دامەزراوە 2026", en: "Established 2026" },
+  /* Who built the site, and a way through to them. The URL is rendered as a
+     link rather than pasted as text — a bare address in a footer is something
+     people read, not something they click. */
+  builtBy: {
+    ar: "من تطوير CoreOs و CoreOs.ai. إن كان لديك مشروع، تفضّل إلى",
+    ckb: "دروستکراوە لەلایەن CoreOs و CoreOs.ai. ئەگەر پڕۆژەیەکت هەیە، سەردانی ئێرە بکە",
+    en: "Powered by CoreOs and CoreOs.ai. If you need a project built, go to",
+  },
 };
+
+/** Where the credit line points. */
+export const COREOS_URL = "https://coreosai.netlify.app";
 
 /* ====================================================== site visit form === */
 
@@ -473,8 +485,12 @@ export const FORM = {
   },
   service: { ar: "الخدمة المطلوبة", ckb: "خزمەتگوزاریی پێویست", en: "What you need" },
   project: { ar: "نوع الموقع", ckb: "جۆری شوێن", en: "Kind of site" },
-  date: { ar: "التاريخ المفضّل", ckb: "بەرواری پەسەند", en: "Preferred date" },
-  time: { ar: "الوقت المفضّل", ckb: "کاتی پەسەند", en: "Preferred time" },
+  date: { ar: "اليوم المفضّل", ckb: "ڕۆژی پەسەند", en: "Preferred day" },
+  dateHint: {
+    ar: "نتفق على الساعة معك عند الاتصال.",
+    ckb: "کاتژمێرەکە لە کاتی پەیوەندیکردندا لەگەڵت ڕێک دەخەین.",
+    en: "We agree the hour with you when we call.",
+  },
   notes: { ar: "ملاحظات", ckb: "تێبینی", en: "Notes" },
   notesHint: {
     ar: "ما تريده، ما لا تريده، ميزانية تقريبية، أي شيء يفيدنا.",

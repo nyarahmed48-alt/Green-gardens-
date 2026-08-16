@@ -101,7 +101,7 @@ export function pageKnowledge(lang: Lang = "en"): string {
 
   parts.push("\n-- What the site visit form asks for --");
   parts.push(
-    "Everyone: the site address, the approximate area in m², which service they need, the kind of site, and a preferred date and time.",
+    "Everyone: the site address, the approximate area in m², which service they need, the kind of site, and a preferred DAY — not a time. The office agrees the hour by phone.",
   );
   parts.push(`Private clients pick from: ${PROJECTS.individual.map((p) => p.name.en).join(", ")}.`);
   parts.push(`Companies pick from: ${PROJECTS.business.map((p) => p.name.en).join(", ")}.`);
