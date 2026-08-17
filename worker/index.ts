@@ -21,9 +21,7 @@
  */
 
 import { handleChat, health } from "../server/chat";
-import { handleReservation } from "../server/reservations";
-import { sendMail } from "../server/mail";
-import { crawlSettings, mailReadiness, mailSettings, providerSettings, type EnvLike } from "../server/settings";
+import { crawlSettings, providerSettings, type EnvLike } from "../server/settings";
 
 export interface Env {
   /** Static assets binding — the built site. */
@@ -35,11 +33,6 @@ export interface Env {
   OPENROUTER_MODEL?: string;
   OPENROUTER_BASE_URL?: string;
   SITE_URL?: string;
-  RESEND_API_KEY?: string;
-  BREVO_API_KEY?: string;
-  MAIL_FROM?: string;
-  MAIL_TO?: string;
-  MAIL_BCC?: string;
   CRAWL_URLS?: string;
   CRAWL_MAX_PAGES?: string;
   CRAWL_TTL_MINUTES?: string;
@@ -55,15 +48,10 @@ async function handleApi(request: Request, env: Env, url: URL): Promise<Response
   const bag = env as unknown as EnvLike;
 
   if (url.pathname === "/api/health") {
-    const mail = mailSettings(bag);
-    return json(health(providerSettings(bag), mailReadiness(mail), mail.transport, mail.to.length, crawlSettings(bag)), 200, {
-      "cache-control": "no-store",
-    });
+    return json(health(providerSettings(bag), crawlSettings(bag)), 200, { "cache-control": "no-store" });
   }
 
-  const isChat = url.pathname === "/api/chat";
-  const isReservation = url.pathname === "/api/reservations";
-  if (!isChat && !isReservation) return json({ error: "NOT_FOUND" }, 404);
+  if (url.pathname !== "/api/chat") return json({ error: "NOT_FOUND" }, 404);
 
   if (request.method !== "POST") {
     return json({ error: "METHOD_NOT_ALLOWED" }, 405, { allow: "POST" });
@@ -76,22 +64,13 @@ async function handleApi(request: Request, env: Env, url: URL): Promise<Response
     return json({ error: "BAD_JSON", message: "Could not read that request." }, 400);
   }
 
-  if (isChat) {
-    const { message, history, lang } = payload ?? {};
-    const { status, body } = await handleChat({
-      message,
-      history,
-      lang,
-      settings: providerSettings(bag),
-      crawl: crawlSettings(bag),
-    });
-    return json(body, status);
-  }
-
-  const { status, body } = await handleReservation({
-    payload: payload ?? {},
-    settings: mailSettings(bag),
-    send: sendMail,
+  const { message, history, lang } = payload ?? {};
+  const { status, body } = await handleChat({
+    message,
+    history,
+    lang,
+    settings: providerSettings(bag),
+    crawl: crawlSettings(bag),
   });
   return json(body, status);
 }

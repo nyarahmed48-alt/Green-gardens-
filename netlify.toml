@@ -3,16 +3,14 @@
   publish = "dist"
   functions = "netlify/functions"
 
-# The two endpoints. These must come before the catch-all below, or it would
-# swallow them and answer with index.html.
+# Green AI. Must come before the catch-all below, or it would swallow the path
+# and answer with index.html.
+#
+# Site-visit requests are NOT here: they go to Netlify Forms, which intercepts
+# the POST to "/" before these rules apply.
 [[redirects]]
   from = "/api/chat"
   to = "/.netlify/functions/chat"
-  status = 200
-
-[[redirects]]
-  from = "/api/reservations"
-  to = "/.netlify/functions/reservations"
   status = 200
 
 [[redirects]]

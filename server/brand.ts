@@ -135,7 +135,7 @@ export const COMPANY = {
    *  cannot happen. */
   address: "Baghdad, Iraq",
   phone: "+964 782 782 9003",
-  email: "greengarden632@gmail.com",
+  email: "greengardens632@gmail.com",
   /** Where the crews travel. Beyond it, ask — it is a question of travel time. */
   coverage: "Baghdad and the surrounding districts, and elsewhere in Iraq by arrangement",
   hours: [

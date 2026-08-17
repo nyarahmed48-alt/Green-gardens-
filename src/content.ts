@@ -380,7 +380,7 @@ export const GARDEN = {
 export const CONTACT = {
   phoneDisplay: "+964 782 782 9003",
   whatsappDigits: "9647827829003",
-  email: "greengarden632@gmail.com",
+  email: "greengardens632@gmail.com",
 };
 
 /** Builds a wa.me link, optionally pre-filling the first message. */
@@ -522,7 +522,26 @@ export const FORM = {
   },
   another: { ar: "أرسل طلبًا آخر", ckb: "داواکارییەکی تر بنێرە", en: "Send another request" },
 
-  /* Failures the browser can hit before the server ever answers. */
+  /* The few checks the browser cannot express with `required` and `type`
+     alone. Everything else is native HTML validation, which the browser
+     already writes in the visitor's own language. */
+  errPhone: {
+    ar: "اكتب رقم هاتف نستطيع الاتصال به.",
+    ckb: "ژمارەی تەلەفۆنێک بنووسە کە بتوانین پەیوەندیت پێوە بکەین.",
+    en: "Enter a phone number we can reach you on.",
+  },
+  errAddress: {
+    ar: "اكتب عنوان الموقع — أين الحديقة؟",
+    ckb: "ناونیشانی شوێنەکە بنووسە — باخچەکە لە کوێیە؟",
+    en: "Enter the site address — where is the garden?",
+  },
+  errFix: {
+    ar: "بعض الحقول تحتاج إلى مراجعة.",
+    ckb: "چەند خانەیەک پێویستیان بە پێداچوونەوەیە.",
+    en: "A few fields need another look.",
+  },
+
+  /* Failures the browser can hit while sending. */
   errOffline: {
     ar: "تعذّر إرسال الطلب. تحقّق من الاتصال وحاول مرة أخرى.",
     ckb: "نەتوانرا داواکارییەکە بنێردرێت. لە پەیوەندییەکە دڵنیا بەرەوە و دووبارە هەوڵ بدە.",

@@ -21,9 +21,7 @@ import path from "node:path";
 import fs from "node:fs";
 import dotenv from "dotenv";
 import { handleChat, health } from "./server/chat";
-import { handleReservation } from "./server/reservations";
-import { sendMailNode } from "./server/mail-node";
-import { crawlSettings, mailReadiness, mailSettings, providerSettings, type EnvLike } from "./server/settings";
+import { crawlSettings, providerSettings, type EnvLike } from "./server/settings";
 import { warmCrawl } from "./server/knowledge";
 
 dotenv.config();
@@ -109,41 +107,30 @@ app.post("/api/chat", async (req, res) => {
   res.status(status).json(body);
 });
 
-app.post("/api/reservations", async (req, res) => {
-  const limit = rateLimit("reservations", clientIp(req), 8);
-  if (!limit.ok) {
-    return res.status(429).json({
-      error: "RATE_LIMITED",
-      message: say(req.body?.lang, {
-        ar: "وصلتنا عدة طلبات منك للتو. إن لم يصلك تأكيد، تواصل معنا مباشرة.",
-        ckb: "چەند داواکارییەکمان لێت پێگەیشت. ئەگەر دڵنیاییت پێنەگەیشت، ڕاستەوخۆ پەیوەندیمان پێوە بکە.",
-        en: "We've just had several requests from you. If no confirmation arrived, contact us directly.",
-      }),
-    });
-  }
-
-  const { status, body } = await handleReservation({
-    payload: req.body || {},
-    settings: mailSettings(env()),
-    send: sendMailNode,
-  });
-  res.status(status).json(body);
-});
-
-/* Which half is configured, as a URL. States only — no key, no model id. */
+/* What is configured, as a URL. States only — no key, no model id. */
 app.get("/api/health", (_req, res) => {
-  const mail = mailSettings(env());
-  res
-    .set("cache-control", "no-store")
-    .json(
-      health(providerSettings(env()), mailReadiness(mail), mail.transport, mail.to.length, crawlSettings(env())),
-    );
+  res.set("cache-control", "no-store").json(health(providerSettings(env()), crawlSettings(env())));
 });
 
 /* An unknown /api path must answer JSON rather than falling through to the
    page — the browser checks the content type to tell a missing endpoint from
    a broken one. */
 app.use("/api", (_req, res) => res.status(404).json({ error: "NOT_FOUND" }));
+
+/* Site-visit requests go to Netlify Forms, which only exists on Netlify. In
+   local development that POST would hit the SPA fallback below, get a 200 back
+   with the page's HTML, and the form would report success for a submission
+   that went nowhere — the exact lie this project has avoided everywhere else.
+   So development answers it here and prints what was sent. */
+if (DEV) {
+  app.post("/", express.urlencoded({ extended: false }), (req, res) => {
+    console.log("\n── site-visit request (development; Netlify Forms takes these in production)");
+    for (const [key, value] of Object.entries(req.body ?? {})) {
+      if (value) console.log(`   ${key}: ${value}`);
+    }
+    res.status(200).send("ok");
+  });
+}
 
 /* ========================================================== the website === */
 

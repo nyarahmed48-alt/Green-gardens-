@@ -16,12 +16,13 @@
  * invoice address, purchase order — and nothing else changes, so a client who
  * picks the wrong tab does not lose what they have typed.
  *
- * Validation is the server's job (server/reservations.ts) and this file
- * renders what comes back per field. Doing it in both places would mean two
- * sets of rules that drift, and the server's set is the one that has to be
- * right — the endpoint is public and a browser check protects nobody. What
- * the browser does add is the cheap part: `required`, `min` on the date, and
- * `type=email`, so an obvious mistake is caught before a round trip.
+ * Submissions go to NETLIFY FORMS, not to an endpoint of ours. Netlify
+ * captures them against the hidden declaration in index.html and emails them
+ * on, which is why there is no API key, no SMTP and no mail server anywhere
+ * in this project. The trade is that there is no server to validate for us,
+ * so the checks live here: mostly native HTML validation, which the browser
+ * already writes in the visitor's own language, plus two rules it cannot
+ * express.
  *
  * The submit button is never disabled on invalid input. A disabled button
  * that will not say why is the most common accessibility failure in a booking
@@ -71,6 +72,24 @@ const EMPTY: FormState = {
   invoiceEmail: "",
   poNumber: "",
 };
+
+/**
+ * The reference the client quotes back on the phone.
+ *
+ * Date prefix so the office can see at a glance how old a request is, then
+ * four characters from an alphabet with no I, O, 0 or 1 in it, because this
+ * gets read down a phone line. Not a key and not a secret — the office matches
+ * on name and address — so collision resistance is not the job here.
+ */
+function newReference(): string {
+  const day = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(4);
+  crypto.getRandomValues(bytes);
+  let tail = "";
+  for (const byte of bytes) tail += alphabet[byte % alphabet.length];
+  return `GG-${day}-${tail}`;
+}
 
 /** Today as YYYY-MM-DD in the visitor's own timezone — `toISOString` would
  *  give UTC and rule out today for anyone east of Greenwich after 21:00. */
@@ -132,43 +151,67 @@ export function ReservationForm() {
     setErrors({});
   }
 
+  /**
+   * The two rules the browser cannot express on its own.
+   *
+   * Everything else — required fields, a plausible email, a date not in the
+   * past, an area within range — is native HTML validation, which the browser
+   * enforces before this runs and phrases in the visitor's own language.
+   */
+  function check(): Record<string, string> {
+    const found: Record<string, string> = {};
+    if ((form.phone.match(/\d/g) ?? []).length < 7) found.phone = c(FORM.errPhone);
+    if (form.siteAddress.trim().length < 8) found.siteAddress = c(FORM.errAddress);
+    return found;
+  }
+
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (busy) return;
+
+    const found = check();
+    if (Object.keys(found).length) {
+      setErrors(found);
+      setProblem(c(FORM.errFix));
+      return;
+    }
 
     setBusy(true);
     setErrors({});
     setProblem(null);
 
+    /* The client's own copy of the reference. There is no server in this path
+       to mint one, and a request the client cannot quote back on the phone is
+       harder to find than it needs to be. */
+    const reference = newReference();
+
     try {
-      const res = await fetch("/api/reservations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          audience,
-          areaM2: Number(form.areaM2),
-          lang,
-          website: honeypot.current?.value ?? "",
-        }),
+      /* Netlify Forms takes a urlencoded body posted to any path on the site,
+         matched to the hidden declaration in index.html by `form-name`. */
+      const body = new URLSearchParams({
+        "form-name": "site-visit",
+        reference,
+        ...form,
+        audience,
+        lang,
+        website: honeypot.current?.value ?? "",
       });
 
-      /* A static-only host has no function to answer this path, so the SPA
-         fallback returns index.html. Say that plainly rather than failing on
-         a JSON parse error nobody can interpret. */
-      if (!res.headers.get("content-type")?.includes("application/json")) {
-        throw new Error(c(FORM.errNoBackend));
-      }
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      });
 
-      const data = await res.json();
-
+      /* Netlify answers a successful capture with the site's own HTML, so
+         there is nothing to parse — the status is the whole answer. A 404
+         means the form was never registered, which on Netlify means the
+         hidden declaration did not survive the build. */
       if (!res.ok) {
-        if (data?.fields && typeof data.fields === "object") setErrors(data.fields);
-        setProblem(data?.message || c(FORM.errOffline));
-        return;
+        throw new Error(res.status === 404 ? c(FORM.errNoBackend) : c(FORM.errOffline));
       }
 
-      setDone({ reference: data.reference, confirmationSent: Boolean(data.confirmationSent) });
+      setDone({ reference, confirmationSent: false });
     } catch (err: any) {
       setProblem(err?.message || c(FORM.errOffline));
     } finally {

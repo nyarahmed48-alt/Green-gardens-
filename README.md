@@ -9,9 +9,9 @@ action on this site books a visit the other way round.
 One page in **Arabic, Sorani Kurdish and English**, with two working systems
 behind it:
 
-- **A site-visit desk** that takes requests from private clients and from
-  companies — with the site address and rough area — and emails them to the
-  office.
+- **A site-visit form** that takes requests from private clients and from
+  companies — with the site address and rough area — and posts them to Netlify
+  Forms, which emails them to the office. No keys, no mail server.
 - **Green AI**, an assistant (built and run by CoreOs) that answers questions
   about the services, the indicative rates and what survives a Baghdad summer.
 
@@ -51,44 +51,33 @@ There is deliberately **no default model**. Ids on aggregators get renamed and
 retired, and a stale hardcoded one fails as "model not found" — an error that
 points nowhere near the cause.
 
-### Site visit requests
+### Site visit requests — nothing to configure
 
-One address is mandatory — where requests go:
+The form posts to **Netlify Forms**. There is no API key, no SMTP server and no
+mail credentials anywhere in this project, which is the whole reason it is set
+up this way.
 
-```dotenv
-MAIL_TO=greengarden632@gmail.com
-MAIL_FROM=Green Gardens <greengarden632@gmail.com>
-```
+Two things to do once, in the Netlify dashboard:
 
-Then pick **one** way to send.
+1. **Forms** — the form registers itself on the first deploy. Netlify finds it
+   by parsing the built HTML, and because this page renders in the browser, the
+   real form does not exist at that moment. The hidden declaration at the top
+   of `index.html` is what the scan sees.
+2. **Project configuration → Notifications → Form submission notifications** —
+   add an email notification so new submissions reach the office inbox.
+   Submissions are also listed under **Forms** whether or not that is set.
 
-**Option A — your own mail server:**
+> **The field names in `index.html` and the form must match exactly.** Netlify
+> silently drops any field it was not told about. If you add a field to
+> `src/ReservationForm.tsx`, add it to the hidden form too.
 
-```dotenv
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER=greengarden632@gmail.com
-SMTP_PASS=your-app-password
-```
+> **This is Netlify-specific.** Deploy the site to Cloudflare, Vercel or your
+> own server and the page still works, Green AI still answers, but the form has
+> nothing to post to. Moving hosts means either that host's form product or
+> bringing back a mail endpoint — the SMTP implementation this replaced is in
+> the git history.
 
-Gmail and Outlook need an **app password**, not the account password.
-`SMTP_SECURE` can normally be left blank — port 465 defaults to implicit TLS
-and everything else to STARTTLS.
-
-> **SMTP cannot run on Cloudflare Workers.** Workers have no TCP sockets. Use
-> option B there; the endpoint will tell you so plainly if you configure SMTP
-> anyway.
-
-**Option B — an HTTP mail API**, which works everywhere including Cloudflare:
-
-```dotenv
-RESEND_API_KEY=re_…
-```
-
-Get one at https://resend.com/api-keys and verify your sending domain first, or
-the provider will refuse your `From` address. Brevo works the same way with
-`BREVO_API_KEY`.
+Netlify's free tier allows 100 form submissions a month.
 
 ### Checking what is live
 
@@ -99,8 +88,7 @@ curl http://localhost:3000/api/health
 ```jsonc
 {
   "assistant":  { "configured": true, "modelsConfigured": 2 },
-  "siteVisits": { "ready": false, "transport": "none", "recipients": 0,
-                  "reason": "MAIL_TO is not set — there is no address to send reservations to." },
+  "siteVisits": { "via": "netlify-forms" },
   "knowledge":  { "pageContent": true, "crawl": { "enabled": false } }
 }
 ```
@@ -122,18 +110,18 @@ jobs rather than one form with a checkbox: a company needs an invoice address,
 a registration number and often a purchase order, and none of that belongs in
 front of someone who wants their back garden replanted.
 
-On submit, two messages go out:
+On submit the browser posts the fields to Netlify, which stores the submission
+and emails it to whoever is set up under Notifications. The client sees a
+reference generated in the browser so they have something to quote on the
+phone.
 
-1. **The office copy**, to `MAIL_TO`. English, every field, the site address at
-   the top — whoever schedules the crew needs *where* first. `Reply-To` is the
-   client, so hitting reply answers them.
-2. **The client's copy**, in whichever language they filled the form in.
-   `Reply-To` is the office.
+**The client does not get a confirmation email.** Netlify notifies the office,
+not the sender. That was the one thing lost in moving off SMTP; if it turns out
+to matter, a Netlify function or a mail service can send one, and the previous
+implementation is in the git history.
 
-If the office copy cannot be sent, **the request fails and says so**. A form
-that thanks someone for a visit nobody booked is worse than one that admits it
-is not connected. If only the client's copy fails, the request still
-succeeded — the office has it — so that is logged and nothing more.
+If Netlify rejects the submission the form says so rather than thanking anyone
+for a visit nobody booked.
 
 Green AI **cannot quote a firm price or book a visit**, and is instructed to
 say so and point at the form. Landscaping is priced off a site visit — ground,
@@ -199,10 +187,10 @@ The server honours `$PORT`, so it runs on any Node host with no extra config.
 
 | Host | Notes |
 | --- | --- |
-| **Cloudflare Workers** | `npm run deploy`. Use `RESEND_API_KEY` — SMTP cannot run here. |
-| **Vercel** | `vercel.json` is in the repo; functions in `api/`. SMTP works. |
-| **Netlify** | `netlify.toml` and `public/_redirects` are in the repo. SMTP works. |
-| **Render / Cloud Run** | Runs `npm run build && npm start`. SMTP works. |
+| **Netlify** | The one the form needs. `netlify.toml` and `public/_redirects` are in the repo. |
+| **Cloudflare Workers** | `npm run deploy`. Page and Green AI only — no form capture. |
+| **Vercel** | `vercel.json` is in the repo; functions in `api/`. No form capture. |
+| **Render / Cloud Run** | Runs `npm run build && npm start`. No form capture. |
 
 Set the same environment variables in whichever platform's dashboard you use.
 
@@ -223,12 +211,8 @@ server/               shared by every deployment target
   brand.ts            the company's facts — services, rates, coverage, lead times
   chat.ts             Green AI: prompt, guardrails, health
   knowledge.ts        what it knows: the page's own copy, plus the crawler
-  reservations.ts     site-visit validation, reference codes, both emails
   settings.ts         every environment variable is read here
   openrouter.ts       the provider client — fetch only, no SDK
-  mail.ts             transports that work anywhere (Resend, Brevo)
-  mail-node.ts        the same, plus SMTP — imported only by Node entries
-  smtp.ts             a small SMTP client (node:net/node:tls, no library)
 
 src/
   App.tsx             the page — composition only
@@ -244,23 +228,18 @@ api/                  Vercel functions
 netlify/functions/    Netlify functions
 ```
 
-`mail.ts` and `mail-node.ts` are two files for one reason: the Worker bundles
-the first and never sees `node:net`, which would fail to build there. Node
-entry points import the second. Everything else is shared verbatim.
-
 ### The endpoints
 
 | | |
 | --- | --- |
 | `POST /api/chat` | `{ message, history, lang }` → `{ text, fallback }` |
-| `POST /api/reservations` | the site-visit form → `{ ok, reference, confirmationSent }` |
 | `GET /api/health` | what is configured |
 
-Both POST endpoints are public, so both are throttled per IP on the Express
-server — 40 chat messages and 8 requests an hour. Serverless invocations
-share no memory, so there the platform's own rate limiting is the place for it.
-The form also carries a honeypot field: a submission that fills it gets a
-plausible-looking success and is quietly dropped.
+The chat endpoint is public, so it is throttled per IP on the Express server —
+40 messages an hour. Serverless invocations share no memory, so there the
+platform's own rate limiting is the place for it. The form carries a honeypot
+field that Netlify checks (`netlify-honeypot="website"`), plus Netlify's own
+spam filtering.
 
 ---
 

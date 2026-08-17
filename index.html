@@ -51,6 +51,43 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
+    <!--
+      Netlify Forms detection.
+
+      Netlify finds forms by parsing the HTML it receives at deploy time. This
+      page renders in the browser, so the real form does not exist yet when
+      that scan happens and Netlify would never register it. This hidden copy
+      is what the scan sees: same form name, same field names, nothing else.
+
+      It is never shown and never submitted. The React form in
+      src/ReservationForm.tsx posts to Netlify with `form-name=site-visit`,
+      and Netlify matches it to this declaration.
+
+      EVERY field the React form sends must appear here, or that field is
+      dropped silently from the submission. Change one, change both.
+    -->
+    <form name="site-visit" data-netlify="true" netlify-honeypot="website" hidden>
+      <input type="hidden" name="form-name" value="site-visit" />
+      <input type="text" name="reference" />
+      <input type="text" name="audience" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="phone" />
+      <input type="text" name="siteAddress" />
+      <input type="text" name="areaM2" />
+      <input type="text" name="service" />
+      <input type="text" name="project" />
+      <input type="text" name="date" />
+      <textarea name="notes"></textarea>
+      <input type="text" name="company" />
+      <input type="text" name="companyRole" />
+      <input type="text" name="taxId" />
+      <input type="email" name="invoiceEmail" />
+      <input type="text" name="poNumber" />
+      <input type="text" name="lang" />
+      <input type="text" name="website" />
+    </form>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

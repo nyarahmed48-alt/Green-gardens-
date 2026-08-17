@@ -8,6 +8,5 @@
 # Order matters: the catch-all is last, or it would swallow the API paths.
 
 /api/chat          /.netlify/functions/chat          200
-/api/reservations  /.netlify/functions/reservations  200
 /api/health        /.netlify/functions/health        200
 /*                 /index.html                       200

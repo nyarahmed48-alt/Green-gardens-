@@ -221,7 +221,8 @@ export async function handleChat({
 
 export interface Health {
   assistant: { configured: boolean; modelsConfigured: number };
-  siteVisits: { ready: boolean; transport: string; recipients: number; reason?: string };
+  /** Requests go to Netlify Forms from the browser; nothing here to check. */
+  siteVisits: { via: "netlify-forms" };
   knowledge: {
     /** Always true: the page's own copy needs no configuration to be read. */
     pageContent: boolean;
@@ -245,13 +246,7 @@ export interface Health {
  * text. The common failure is a missing variable, and guessing which one costs
  * an hour.
  */
-export function health(
-  provider: ProviderSettings,
-  mail: { ready: boolean; reason?: string },
-  transport: string,
-  recipients: number,
-  crawl?: CrawlSettings,
-): Health {
+export function health(provider: ProviderSettings, crawl?: CrawlSettings): Health {
   /* Reported from the cache rather than by crawling: opening a health check
      should never kick off network work of its own. Nulls mean "not crawled on
      this instance yet", which on a serverless host is the normal state for a
@@ -260,7 +255,7 @@ export function health(
 
   return {
     assistant: { configured: isConfigured(provider), modelsConfigured: modelCount(provider) },
-    siteVisits: { ready: mail.ready, transport, recipients, ...(mail.reason ? { reason: mail.reason } : {}) },
+    siteVisits: { via: "netlify-forms" },
     knowledge: {
       pageContent: true,
       crawl: crawl?.urls.length
